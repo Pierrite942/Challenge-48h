@@ -17,17 +17,16 @@
                 <span class="logo-line">arts</span>
             </a>
 
-            <div class="search-wrap">
-                <input type="search" placeholder="Rechercher..." aria-label="Rechercher">
-            </div>
-
             <div class="header-actions">
                 {% if user %}
                 <a href="{{ url_for('logout') }}" class="header-btn primary">Déconnexion</a>
+                <a href="{{ url_for('profile') }}" class="profile-link" aria-label="Voir le profil">
+                    <span class="profile-avatar">{{ user.username[0] | upper if user.username else "U" }}</span>
+                    <span class="profile-name">{{ user.username }}</span>
+                </a>
                 {% else %}
                 <a href="{{ url_for('register') }}" class="header-btn primary">S'inscrire</a>
                 {% endif %}
-                <button type="button" class="header-btn menu">☰ Menu</button>
             </div>
         </div>
     </header>

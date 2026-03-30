@@ -1,4 +1,5 @@
 import os
+import re
 import uuid
 
 from dotenv import load_dotenv
@@ -102,6 +103,21 @@ def _delete_media_if_exists(media_path: str | None) -> None:
         pass
 
 
+def _build_unique_ynov_email(username: str, used_emails: set[str]) -> str:
+    base = re.sub(r"[^a-z0-9._-]", "", (username or "").strip().lower())
+    if not base:
+        base = "user"
+
+    candidate = f"{base}@ynov.com"
+    counter = 1
+    while candidate in used_emails:
+        candidate = f"{base}{counter}@ynov.com"
+        counter += 1
+
+    used_emails.add(candidate)
+    return candidate
+
+
 def ensure_legacy_schema_updates() -> None:
     inspector = inspect(db.engine)
 
@@ -110,6 +126,28 @@ def ensure_legacy_schema_updates() -> None:
         db.session.execute(
             text('ALTER TABLE "user" ADD COLUMN is_admin BOOLEAN NOT NULL DEFAULT 0')
         )
+        db.session.commit()
+
+    if "email" not in user_columns:
+        db.session.execute(text('ALTER TABLE "user" ADD COLUMN email VARCHAR(255)'))
+        db.session.commit()
+
+    # Remplit les anciens comptes sans email et migre les placeholders historiques.
+    existing_users = db.session.query(User).all()
+    used_emails = {
+        (existing_user.email or "").strip().lower()
+        for existing_user in existing_users
+        if (existing_user.email or "").strip().lower().endswith("@ynov.com")
+    }
+
+    has_updates = False
+    for existing_user in existing_users:
+        normalized_email = (existing_user.email or "").strip().lower()
+        if not normalized_email or normalized_email.endswith("@local.ynov"):
+            existing_user.email = _build_unique_ynov_email(existing_user.username, used_emails)
+            has_updates = True
+
+    if has_updates:
         db.session.commit()
 
     news_columns = [column["name"] for column in inspector.get_columns("news")]
@@ -158,20 +196,30 @@ def index():
 def register():
     if request.method == "POST":
         username = (request.form.get("username") or "").strip()
+        email = (request.form.get("email") or "").strip().lower()
         password = request.form.get("password") or ""
 
-        if not username or not password:
-            flash("Le nom d'utilisateur et le mot de passe sont obligatoires.")
+        if not username or not email or not password:
+            flash("Le nom d'utilisateur, l'email et le mot de passe sont obligatoires.")
+            return render_template("register.html")
+
+        if not re.match(r"^[^\s@]+@ynov\.com$", email):
+            flash("L'adresse email doit se terminer par @ynov.com.")
             return render_template("register.html")
 
         if User.query.filter_by(username=username).first():
             flash("Ce nom d'utilisateur existe déjà.")
             return render_template("register.html")
 
+        if User.query.filter_by(email=email).first():
+            flash("Cette adresse email est déjà utilisée.")
+            return render_template("register.html")
+
         is_first_user = User.query.count() == 0
 
         new_user = User(
             username=username,
+            email=email,
             password_hash=generate_password_hash(password, method="pbkdf2:sha256"),
             is_admin=is_first_user,
         )
@@ -212,6 +260,15 @@ def logout():
     session.clear()
     flash("Tu as été déconnecté.")
     return redirect(url_for("login"))
+
+
+@app.route("/profile")
+def profile():
+    current_user = _get_current_user()
+    if current_user is None:
+        return redirect(url_for("login"))
+
+    return render_template("profile.html", user=current_user)
 
 
 @app.route("/news", methods=["POST"])
