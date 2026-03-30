@@ -385,6 +385,9 @@ a {
 
 .post-actions {
     margin-top: 8px;
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
 }
 
 .post-actions form {
@@ -403,6 +406,26 @@ a {
 .like-btn.active {
     background: #ffdfeb;
     border-color: #f59abb;
+}
+
+.admin-delete-btn {
+    border: 1px solid #d26d6d;
+    border-radius: 999px;
+    background: #fff2f2;
+    color: #983a3a;
+    padding: 5px 10px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.admin-delete-btn.small {
+    padding: 2px 8px;
+    font-size: 0.72rem;
+}
+
+.inline-delete-form {
+    display: inline-flex;
+    margin-left: 6px;
 }
 
 .comment-list {

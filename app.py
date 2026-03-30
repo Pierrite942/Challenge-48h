@@ -88,6 +88,20 @@ def _get_current_user():
     return current_user
 
 
+def _delete_media_if_exists(media_path: str | None) -> None:
+    if not media_path:
+        return
+
+    base_static = app.static_folder or "static"
+    absolute_path = os.path.normpath(os.path.join(base_static, media_path))
+    try:
+        if os.path.isfile(absolute_path):
+            os.remove(absolute_path)
+    except OSError:
+        # Ignore cleanup issues to avoid blocking functional deletion.
+        pass
+
+
 def ensure_legacy_schema_updates() -> None:
     inspector = inspect(db.engine)
 
@@ -300,6 +314,50 @@ def add_post_comment(post_id: int):
 
     db.session.add(PostComment(post_id=post_id, user_id=current_user.id, content=content))
     db.session.commit()
+    return redirect(url_for("index"))
+
+
+@app.route("/admin/posts/<int:post_id>/delete", methods=["POST"])
+def admin_delete_post(post_id: int):
+    current_user = _get_current_user()
+    if current_user is None:
+        return redirect(url_for("login"))
+
+    if not current_user.is_admin:
+        flash("Action reservee aux admins.")
+        return redirect(url_for("index"))
+
+    post_item = db.session.get(Post, post_id)
+    if post_item is None:
+        flash("Post introuvable.")
+        return redirect(url_for("index"))
+
+    _delete_media_if_exists(post_item.image_path)
+    _delete_media_if_exists(post_item.video_path)
+    db.session.delete(post_item)
+    db.session.commit()
+    flash("Post supprime.")
+    return redirect(url_for("index"))
+
+
+@app.route("/admin/comments/<int:comment_id>/delete", methods=["POST"])
+def admin_delete_comment(comment_id: int):
+    current_user = _get_current_user()
+    if current_user is None:
+        return redirect(url_for("login"))
+
+    if not current_user.is_admin:
+        flash("Action reservee aux admins.")
+        return redirect(url_for("index"))
+
+    comment_item = db.session.get(PostComment, comment_id)
+    if comment_item is None:
+        flash("Commentaire introuvable.")
+        return redirect(url_for("index"))
+
+    db.session.delete(comment_item)
+    db.session.commit()
+    flash("Commentaire supprime.")
     return redirect(url_for("index"))
 
 

@@ -73,11 +73,23 @@
                                     Like ({{ item.likes | length }})
                                 </button>
                             </form>
+                            {% if user.is_admin %}
+                            <form action="{{ url_for('admin_delete_post', post_id=item.id) }}" method="POST" onsubmit="return confirm('Confirmer la suppression de ce post ?');">
+                                <button type="submit" class="admin-delete-btn">Supprimer le post</button>
+                            </form>
+                            {% endif %}
                         </div>
 
                         <div class="comment-list">
                             {% for comment in item.comments %}
-                            <p><strong>{{ comment.user.username }}</strong> {{ comment.content }}</p>
+                            <p>
+                                <strong>{{ comment.user.username }}</strong> {{ comment.content }}
+                                {% if user.is_admin %}
+                                <form class="inline-delete-form" action="{{ url_for('admin_delete_comment', comment_id=comment.id) }}" method="POST" onsubmit="return confirm('Confirmer la suppression de ce commentaire ?');">
+                                    <button type="submit" class="admin-delete-btn small">Supprimer</button>
+                                </form>
+                                {% endif %}
+                            </p>
                             {% endfor %}
                         </div>
                         <form class="comment-form" action="{{ url_for('add_post_comment', post_id=item.id) }}" method="POST">
@@ -135,6 +147,7 @@
         }
 
         const initialItems = {{ serialized_posts | tojson }};
+        const isAdmin = {{ user.is_admin | tojson }};
         let latestId = Number(feedList.dataset.lastId || 0);
 
         const drawer = document.getElementById("post-drawer");
@@ -215,6 +228,7 @@
                     <form action="/posts/${item.id}/like" method="POST">
                         <button type="submit" class="like-btn">Like (${Number(item.likes_count || 0)})</button>
                     </form>
+                    ${isAdmin ? `<form action="/admin/posts/${item.id}/delete" method="POST" onsubmit="return confirm('Confirmer la suppression de ce post ?');"><button type="submit" class="admin-delete-btn">Supprimer le post</button></form>` : ""}
                 </div>
                 <div class="comment-list"></div>
                 <form class="comment-form" action="/posts/${item.id}/comments" method="POST">
