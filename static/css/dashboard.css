@@ -352,23 +352,55 @@
     margin-top: 10px;
     display: grid;
     gap: 6px;
+    grid-template-columns: 1fr auto;
+    align-items: center;
 }
 
 .chatbot-form input {
     border: 1px solid #f1f1f1;
-    height: 18px;
-    font-size: 0.75rem;
-    padding: 0 4px;
+    border-radius: 8px;
+    height: 38px;
+    font-size: 0.86rem;
+    padding: 0 10px;
+    min-width: 0;
 }
 
 .chatbot-form button {
     width: fit-content;
     background: transparent;
     border: 1px solid #f1f1f1;
+    border-radius: 8px;
     color: #ffffff;
-    font-size: 0.75rem;
-    padding: 2px 5px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    padding: 9px 12px;
     cursor: pointer;
+}
+
+.chatbot-messages {
+    margin-top: 10px;
+    max-height: 180px;
+    overflow: auto;
+    display: grid;
+    gap: 6px;
+    padding-right: 2px;
+}
+
+.chatbot-message {
+    margin: 0;
+    padding: 8px 10px;
+    border-radius: 8px;
+    font-size: 0.84rem;
+    line-height: 1.35;
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.chatbot-message.user {
+    background: rgba(53, 221, 209, 0.2);
+}
+
+.chatbot-message.bot {
+    background: rgba(255, 255, 255, 0.28);
 }
 
 .ynov-news-form {

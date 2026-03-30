@@ -122,8 +122,10 @@
             <h3>Chat Bot</h3>
             <p>Bonjour ! Je suis l'IA Gemini.<br>Comment puis-je vous aider ?</p>
 
-            <form class="chatbot-form" action="#" method="post" onsubmit="return false;">
-                <input type="text" placeholder="Ecrivez votre message..." aria-label="Message chatbot">
+            <div class="chatbot-messages" id="chatbot-messages" aria-live="polite"></div>
+
+            <form class="chatbot-form" id="chatbot-form" action="#" method="post" onsubmit="return false;">
+                <input id="chatbot-input" type="text" placeholder="Ecrivez votre message..." aria-label="Message chatbot">
                 <button type="submit">Envoyer</button>
             </form>
         </article>
@@ -135,6 +137,54 @@
 
 <script>
     (() => {
+        const chatbotForm = document.getElementById("chatbot-form");
+        const chatbotInput = document.getElementById("chatbot-input");
+        const chatbotMessages = document.getElementById("chatbot-messages");
+
+        const appendChatMessage = (author, content, roleClass) => {
+            if (!chatbotMessages) {
+                return;
+            }
+
+            const messageNode = document.createElement("p");
+            messageNode.className = `chatbot-message ${roleClass}`;
+
+            const strong = document.createElement("strong");
+            strong.textContent = `${author} : `;
+            messageNode.append(strong);
+            messageNode.append(document.createTextNode(content || ""));
+
+            chatbotMessages.append(messageNode);
+            chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+        };
+
+        if (chatbotForm && chatbotInput) {
+            chatbotForm.addEventListener("submit", async () => {
+                const userText = chatbotInput.value.trim();
+                if (!userText) {
+                    return;
+                }
+
+                appendChatMessage("Vous", userText, "user");
+                chatbotInput.value = "";
+
+                try {
+                    const response = await fetch("/api/ai/chat", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({ message: userText }),
+                    });
+
+                    const payload = await response.json();
+                    appendChatMessage("IA", payload.reply || "Pas de réponse.", "bot");
+                } catch (_error) {
+                    appendChatMessage("IA", "Erreur réseau, réessaie.", "bot");
+                }
+            });
+        }
+
         const feedList = document.getElementById("feed-list");
         if (!feedList) {
             return;

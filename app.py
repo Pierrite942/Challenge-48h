@@ -9,6 +9,7 @@ from sqlalchemy.exc import IntegrityError
 from werkzeug.utils import secure_filename
 from werkzeug.security import check_password_hash, generate_password_hash
 
+from ia.gemini_service import chat_simple
 from models import News, Post, PostComment, PostLike, PrivateMessage, User, db
 
 load_dotenv()
@@ -98,7 +99,6 @@ def _delete_media_if_exists(media_path: str | None) -> None:
         if os.path.isfile(absolute_path):
             os.remove(absolute_path)
     except OSError:
-        # Ignore cleanup issues to avoid blocking functional deletion.
         pass
 
 
@@ -131,7 +131,6 @@ def ensure_legacy_schema_updates() -> None:
         db.session.execute(text('ALTER TABLE "user" ADD COLUMN email VARCHAR(255)'))
         db.session.commit()
 
-    # Remplit les anciens comptes sans email et migre les placeholders historiques.
     existing_users = db.session.query(User).all()
     used_emails = {
         (existing_user.email or "").strip().lower()
@@ -230,7 +229,6 @@ def register():
             flash("Ce nom d'utilisateur existe déjà.")
             return render_template("register.html")
 
-        # Connexion automatique après création de compte.
         session["user_id"] = new_user.id
         flash("Compte créé avec succès. Bienvenue !")
         return redirect(url_for("index"))
@@ -361,6 +359,22 @@ def send_message():
     db.session.commit()
 
     return redirect(url_for("messages", with_user=recipient.id))
+
+
+@app.route("/api/ai/chat", methods=["POST"])
+def ai_chat():
+    current_user = _get_current_user()
+    if current_user is None:
+        return jsonify({"reply": "Connecte-toi pour utiliser le chatbot."}), 401
+
+    payload = request.get_json(silent=True) or {}
+    user_message = (payload.get("message") or "").strip()
+
+    if not user_message:
+        return jsonify({"reply": "Merci d'écrire un message."}), 400
+
+    reply = chat_simple(user_message)
+    return jsonify({"reply": reply})
 
 
 @app.route("/news", methods=["POST"])
