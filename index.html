@@ -249,39 +249,29 @@
             chatSendBtn.disabled = true;
             addMessage('', 'loading');
 
-            const apiKey = "AIzaSyCuzEOE7JDRqczWZMNZt6iacP_lR1cbJu0";
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
-
             try {
-                const response = await fetch(apiUrl, {
+                const response = await fetch('/api/chat', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        contents: [{ parts: [{ text: text }] }]
-                    })
+                    body: JSON.stringify({ message: text })
                 });
 
                 const data = await response.json();
                 removeLoading();
 
-                console.log("Réponse API:", data);
-                console.log("Status:", response.status);
-
                 if (!response.ok) {
-                    addMessage("Erreur API : " + (data.error?.message || "Erreur inconnue"), 'bot');
+                    addMessage("Erreur : " + (data.error || "Erreur inconnue"), 'bot');
                     return;
                 }
 
-                if (data.candidates && data.candidates.length > 0 && data.candidates[0].content) {
-                    const botReply = data.candidates[0].content.parts[0].text;
-                    addMessage(botReply, 'bot');
+                if (data.response) {
+                    addMessage(data.response, 'bot');
                 } else {
-                    addMessage("Erreur : structure de réponse inattendue. Vérifiez la console.", 'bot');
+                    addMessage("Erreur : pas de réponse", 'bot');
                 }
             } catch (err) {
                 removeLoading();
-                console.error("Erreur:", err);
-                addMessage("Erreur : " + err.message, 'bot');
+                addMessage("Erreur de connexion au serveur", 'bot');
             } finally {
                 chatSendBtn.disabled = false;
                 chatInput.focus();
