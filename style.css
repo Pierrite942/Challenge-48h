@@ -53,6 +53,33 @@ header {
     background-color: white;
 }
 
+/* ===== HEADER ACTIONS (INSCRIPTION) ===== */
+.header-actions {
+    margin-right: 1.5rem;
+}
+
+.btn-inscription {
+    display: inline-block;
+    background: linear-gradient(135deg, #ec4363, #ff90b0);
+    color: white;
+    text-decoration: none;
+    padding: 0.6rem 1.5rem;
+    font-size: 1rem;
+    font-weight: bold;
+    border-radius: 25px;
+    box-shadow: 0 4px 10px rgba(236, 67, 99, 0.3);
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.btn-inscription:hover {
+    background: linear-gradient(135deg, #ff90b0, #ec4363);
+    box-shadow: 0 6px 15px rgba(236, 67, 99, 0.5);
+    transform: translateY(-2px);
+    color: white;
+}
+
 /* ===== MENU DÉROULANT (DROITE) ===== */
 .menu-section {
     position: relative; /* Indispensable pour placer le menu par rapport au bouton */

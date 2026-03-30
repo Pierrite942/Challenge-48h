@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inscription - Mon Site</title>
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <div class="logo">
+                <a href="../index.html">
+                    <img src="../image/h__1_-removebg-preview.png" alt="Logo">
+                </a>
+            </div>
+
+            <div class="search-bar">
+                <input type="text" placeholder="Rechercher...">
+            </div>
+            
+            <div class="header-actions">
+                <a href="login.html" class="btn-inscription" style="background: transparent; color: #fff; box-shadow: none; border: 2px solid #33e1cf;">Se connecter</a>
+            </div>
+
+            <div class="menu-section">
+                <button class="menu-btn" id="menuBtn">☰ Menu</button>
+                <div class="dropdown-menu" id="menuDropdown">
+                    <a href="../index.html">Accueil</a>
+                    <a href="login.html">Connexion</a>
+                    <a href="services.html">Services</a>
+                    <a href="apropos.html">À propos</a>
+                    <a href="contact.html">Contact</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="auth-page-main">
+        <div class="auth-container">
+            <h1>Créer un compte</h1>
+            <form action="#" method="POST">
+                <div class="form-group">
+                    <label for="prenom">Prénom</label>
+                    <input type="text" id="prenom" name="prenom" required placeholder="Votre prénom">
+                </div>
+                <div class="form-group">
+                    <label for="nom">Nom</label>
+                    <input type="text" id="nom" name="nom" required placeholder="Votre nom">
+                </div>
+                <div class="form-group">
+                    <label for="email">Adresse Email</label>
+                    <input type="email" id="email" name="email" required placeholder="votre@email.com">
+                </div>
+                <div class="form-group">
+                    <label for="password">Mot de passe</label>
+                    <input type="password" id="password" name="password" required placeholder="••••••••">
+                </div>
+                <div class="form-group">
+                    <label for="confirm-password">Confirmer le mot de passe</label>
+                    <input type="password" id="confirm-password" name="confirm-password" required placeholder="••••••••">
+                </div>
+                <button type="submit" class="btn-submit">M'inscrire</button>
+            </form>
+            <div class="auth-links">
+                <p>Déjà un compte ? <a href="login.html">Se connecter ici</a></p>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Script pour le menu
+        const menuBtn = document.getElementById('menuBtn');
+        const menuDropdown = document.getElementById('menuDropdown');
+
+        menuBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            menuDropdown.classList.toggle('show');
+        });
+
+        document.addEventListener('click', function(e) {
+            if (!menuBtn.contains(e.target) && !menuDropdown.contains(e.target)) {
+                menuDropdown.classList.remove('show');
+            }
+        });
+    </script>
+</body>
+</html>

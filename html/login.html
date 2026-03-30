@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connexion - Mon Site</title>
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <div class="logo">
+                <a href="../index.html">
+                    <img src="../image/h__1_-removebg-preview.png" alt="Logo">
+                </a>
+            </div>
+
+            <div class="search-bar">
+                <input type="text" placeholder="Rechercher...">
+            </div>
+            
+            <div class="header-actions">
+                <a href="inscription.html" class="btn-inscription">S'inscrire</a>
+            </div>
+
+            <div class="menu-section">
+                <button class="menu-btn" id="menuBtn">☰ Menu</button>
+                <div class="dropdown-menu" id="menuDropdown">
+                    <a href="../index.html">Accueil</a>
+                    <a href="login.html">Connexion</a>
+                    <a href="services.html">Services</a>
+                    <a href="apropos.html">À propos</a>
+                    <a href="contact.html">Contact</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="auth-page-main">
+        <div class="auth-container" style="max-width: 400px; margin-top: 6rem;">
+            <h1>Se connecter</h1>
+            <form action="#" method="POST">
+                <div class="form-group">
+                    <label for="email">Adresse Email</label>
+                    <input type="email" id="email" name="email" required placeholder="votre@email.com">
+                </div>
+                <div class="form-group">
+                    <label for="password">Mot de passe</label>
+                    <input type="password" id="password" name="password" required placeholder="••••••••">
+                </div>
+                <button type="submit" class="btn-submit" style="margin-top: 2rem;">Connexion</button>
+            </form>
+            <div class="auth-links">
+                <p>Pas encore de compte ? <a href="inscription.html">Créer un compte</a></p>
+                <p style="margin-top: 10px;"><a href="#" style="font-size: 0.9em; color: #999; font-weight: normal;">Mot de passe oublié ?</a></p>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Script pour le menu
+        const menuBtn = document.getElementById('menuBtn');
+        const menuDropdown = document.getElementById('menuDropdown');
+
+        menuBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            menuDropdown.classList.toggle('show');
+        });
+
+        document.addEventListener('click', function(e) {
+            if (!menuBtn.contains(e.target) && !menuDropdown.contains(e.target)) {
+                menuDropdown.classList.remove('show');
+            }
+        });
+    </script>
+</body>
+</html>
