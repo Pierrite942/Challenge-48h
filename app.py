@@ -1,10 +1,13 @@
 from flask import Flask, render_template, request, jsonify
-import requests
+import google.generativeai as genai
+import os
 
-app = Flask(__name__)
+# Configuration Flask avec le bon dossier de templates et static
+app = Flask(__name__, template_folder='.', static_folder='.', static_url_path='')
 
-GEMINI_API_KEY = "AIzaSyCuzEOE7JDRqczWZMNZt6iacP_lR1cbJu0"
-GEMINI_URL = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={GEMINI_API_KEY}"
+# Configuration de la clé API
+API_KEY = "AIzaSyCuzEOE7JDRqczWZMNZt6iacP_lR1cbJu0"
+genai.configure(api_key=API_KEY)
 
 @app.route('/')
 def index():
@@ -12,40 +15,39 @@ def index():
 
 @app.route('/api/chat', methods=['POST'])
 def chat():
-    data = request.json
-    user_message = data.get('message', '').strip()
-
-    if not user_message:
-        return jsonify({'error': 'Message vide'}), 400
-
-    payload = {
-        "contents": [
-            {"parts": [{"text": user_message}]}
-        ]
-    }
-
     try:
-        resp = requests.post(GEMINI_URL, json=payload, timeout=15)
-        resp.raise_for_status()
-        result = resp.json()
-        bot_reply = result['candidates'][0]['content']['parts'][0]['text']
-        return jsonify({'response': bot_reply})
-    except requests.exceptions.Timeout:
-        return jsonify({'error': "L'IA met trop de temps à répondre."}), 504
+        data = request.json
+        user_message = data.get('message', '').strip()
+
+        if not user_message:
+            return jsonify({'error': 'Message vide'}), 400
+
+        # Utiliser la bibliothèque Google Generative AI
+        model = genai.GenerativeModel("gemini-2.0-flash")
+        response = model.generate_content(user_message)
+        
+        if response and response.text:
+            return jsonify({'response': response.text})
+        else:
+            return jsonify({'error': 'Pas de réponse de l\'IA'}), 500
+            
     except Exception as e:
-        return jsonify({'error': f"Erreur API Gemini : {str(e)}"}), 500
+        print(f"Erreur dans /api/chat: {str(e)}")
+        return jsonify({'error': f"Erreur: {str(e)}"}), 500
 
 @app.route('/apropos')
 def apropos():
-    return render_template('apropos.html')
+    return render_template('html/apropos.html')
 
 @app.route('/services')
 def services():
-    return render_template('services.html')
+    return render_template('html/services.html')
 
 @app.route('/contact')
 def contact():
-    return render_template('contact.html')
+    return render_template('html/contact.html')
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    print("🚀 Démarrage du serveur Flask...")
+    print("✅ API Gemini configurée")
+    app.run(debug=True, host='127.0.0.1', port=5000)
