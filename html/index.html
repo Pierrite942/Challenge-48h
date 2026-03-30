@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <div class="header-title">
+                <h1>Mon Site</h1>
+            </div>
+            <div class="header-menu">
+                <button class="menu-btn" id="menuBtn">☰ Menu</button>
+                <nav class="dropdown-menu" id="dropdownMenu">
+                    <a href="index.html">Accueil</a>
+                    <a href="services.html">Services</a>
+                    <a href="apropos.html">À propos</a>
+                    <a href="contact.html">Contact</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+    <div class="container">
+        <h1>Bienvenue sur mon site</h1>
+        <p>Ceci est un exemple de page HTML avec une feuille de style CSS.</p>
+        <button class="btn">Cliquez-moi</button>
+    </div>
+
+    <script>
+        // Menu déroulant
+        const menuBtn = document.getElementById('menuBtn');
+        const dropdownMenu = document.getElementById('dropdownMenu');
+
+        // Ouvrir/fermer le menu
+        menuBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            dropdownMenu.classList.toggle('active');
+        });
+
+        // Fermer le menu si on clique ailleurs
+        document.addEventListener('click', function() {
+            dropdownMenu.classList.remove('active');
+        });
+
+        // Fermer le menu quand on clique sur un lien
+        const menuLinks = dropdownMenu.querySelectorAll('a');
+        menuLinks.forEach(link => {
+            link.addEventListener('click', function() {
+                dropdownMenu.classList.remove('active');
+            });
+        });
+    </script>
+</body>
+</html>
