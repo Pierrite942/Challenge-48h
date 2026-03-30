@@ -1,0 +1,142 @@
+/* ===== MESSAGE PAGE STYLES ===== */
+
+/* Hero Section */
+.hero {
+    background: linear-gradient(135deg, #1b1752, #33e1cf);
+    color: white;
+    padding: 4rem 2rem;
+    text-align: center;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 15px rgba(27, 23, 82, 0.3);
+}
+
+.hero h1 {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+}
+
+.hero p {
+    font-size: 1.2rem;
+    opacity: 0.95;
+}
+
+/* Message Sections */
+.section-1, .section-2, .section-3 {
+    background-color: #f9f9f9;
+    padding: 2rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    border-left: 5px solid #33e1cf;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.section-1:hover, .section-2:hover, .section-3:hover {
+    transform: translateX(5px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+    background-color: #fff;
+}
+
+.section-1 h2, .section-2 h2, .section-3 h2 {
+    color: #1b1752;
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
+    font-weight: bold;
+}
+
+.section-1 p, .section-2 p, .section-3 p {
+    color: #666;
+    line-height: 1.8;
+    font-size: 1rem;
+}
+
+/* Message Form */
+.message-form {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 8px;
+    border: 2px solid #33e1cf;
+    margin-top: 2rem;
+    box-shadow: 0 4px 10px rgba(51, 225, 207, 0.2);
+}
+
+.message-form h3 {
+    color: #1b1752;
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #333;
+    font-weight: bold;
+}
+
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    padding: 0.75rem;
+    border: 2px solid #ddd;
+    border-radius: 5px;
+    font-family: Arial, sans-serif;
+    transition: border-color 0.3s ease;
+    font-size: 1rem;
+}
+
+.form-group textarea {
+    min-height: 150px;
+    resize: vertical;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: #33e1cf;
+    box-shadow: 0 0 5px rgba(51, 225, 207, 0.3);
+    background-color: #f0fffe;
+}
+
+/* Submit Button */
+.submit-btn,
+.send-btn {
+    background: linear-gradient(135deg, #33e1cf, #1b1752);
+    color: white;
+    padding: 0.8rem 2rem;
+    border: none;
+    border-radius: 25px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(27, 23, 82, 0.3);
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+}
+
+.submit-btn:hover,
+.send-btn:hover {
+    background: linear-gradient(135deg, #1b1752, #33e1cf);
+    box-shadow: 0 6px 15px rgba(27, 23, 82, 0.5);
+    transform: translateY(-2px);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .hero h1 {
+        font-size: 1.8rem;
+    }
+    
+    .section-1, .section-2, .section-3 {
+        padding: 1.5rem;
+    }
+    
+    .message-form {
+        padding: 1.5rem;
+    }
+}
