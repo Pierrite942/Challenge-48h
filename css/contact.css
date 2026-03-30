@@ -1,0 +1,120 @@
+/* ===== CONTACT PAGE STYLES ===== */
+
+/* Hero Section */
+.hero {
+    background: linear-gradient(135deg, #ec4363, #ff90b0);
+    color: white;
+    padding: 4rem 2rem;
+    text-align: center;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 15px rgba(236, 67, 99, 0.3);
+}
+
+.hero h1 {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+}
+
+.hero p {
+    font-size: 1.2rem;
+    opacity: 0.95;
+}
+
+/* Contact Sections */
+.section-1, .section-2, .section-3 {
+    background-color: #f9f9f9;
+    padding: 2rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    border-left: 5px solid #33e1cf;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.section-1:hover, .section-2:hover, .section-3:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+}
+
+.section-1 h2, .section-2 h2, .section-3 h2 {
+    color: #ec4363;
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
+}
+
+.section-1 p, .section-2 p, .section-3 p {
+    color: #666;
+    line-height: 1.8;
+    font-size: 1rem;
+}
+
+/* Contact Form */
+form {
+    background-color: #fff;
+    padding: 2rem;
+    border-radius: 8px;
+    border: 2px solid #eee;
+    margin-top: 2rem;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #333;
+    font-weight: bold;
+}
+
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    padding: 0.75rem;
+    border: 2px solid #ddd;
+    border-radius: 5px;
+    font-family: Arial, sans-serif;
+    transition: border-color 0.3s ease;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: #33e1cf;
+    box-shadow: 0 0 5px rgba(51, 225, 207, 0.3);
+}
+
+/* Submit Button */
+.submit-btn {
+    background: linear-gradient(135deg, #ec4363, #ff90b0);
+    color: white;
+    padding: 0.8rem 2rem;
+    border: none;
+    border-radius: 25px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(236, 67, 99, 0.3);
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+}
+
+.submit-btn:hover {
+    background: linear-gradient(135deg, #ff90b0, #ec4363);
+    box-shadow: 0 6px 15px rgba(236, 67, 99, 0.5);
+    transform: translateY(-2px);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .hero h1 {
+        font-size: 1.8rem;
+    }
+    
+    .section-1, .section-2, .section-3 {
+        padding: 1.5rem;
+    }
+}
