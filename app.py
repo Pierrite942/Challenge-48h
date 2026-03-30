@@ -22,7 +22,6 @@ app.config["UPLOAD_FOLDER"] = os.path.join(app.static_folder or "static", "uploa
 app.config["MAX_CONTENT_LENGTH"] = 30 * 1024 * 1024
 
 ALLOWED_IMAGE_EXTENSIONS = {"png", "jpg", "jpeg", "gif", "webp"}
-ALLOWED_VIDEO_EXTENSIONS = {"mp4", "webm", "mov", "ogg"}
 
 db.init_app(app)
 
@@ -303,27 +302,20 @@ def add_post():
 
     content = (request.form.get("content") or "").strip()
     image_file = request.files.get("image")
-    video_file = request.files.get("video")
 
     image_path = _save_media_file(image_file, ALLOWED_IMAGE_EXTENSIONS, "images")
-    video_path = _save_media_file(video_file, ALLOWED_VIDEO_EXTENSIONS, "videos")
 
     if image_file and image_file.filename and image_path is None:
         flash("Format d'image non supporte.")
         return redirect(url_for("index"))
 
-    if video_file and video_file.filename and video_path is None:
-        flash("Format de video non supporte.")
-        return redirect(url_for("index"))
-
-    if not content and not image_path and not video_path:
-        flash("Ajoute du texte, une image ou une video pour publier.")
+    if not content and not image_path:
+        flash("Ajoute du texte ou une image pour publier.")
         return redirect(url_for("index"))
 
     post_item = Post(
         content=content,
         image_path=image_path,
-        video_path=video_path,
         author_id=current_user.id,
     )
     db.session.add(post_item)
