@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Ynov Access{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;700&family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header class="site-header">
+        <div class="site-header-inner">
+            <a href="{{ url_for('index') }}" class="logo-block" aria-label="Accueil">
+                <span class="logo-line">yb</span>
+                <span class="logo-line">arts</span>
+            </a>
+
+            <div class="search-wrap">
+                <input type="search" placeholder="Rechercher..." aria-label="Rechercher">
+            </div>
+
+            <div class="header-actions">
+                {% if user %}
+                <a href="{{ url_for('logout') }}" class="header-btn primary">Déconnexion</a>
+                {% else %}
+                <a href="{{ url_for('register') }}" class="header-btn primary">S'inscrire</a>
+                {% endif %}
+                <button type="button" class="header-btn menu">☰ Menu</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="page-content">
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="flash-stack">
+                    {% for message in messages %}
+                        <div class="flash-message">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </main>
+</body>
+</html>

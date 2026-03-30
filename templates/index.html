@@ -1,46 +1,42 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mon Site</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
-<body>
-    <header>
-        <div class="header-container">
-            <div class="logo">Mon Site</div>
-            <button class="menu-toggle" id="menuToggle">☰</button>
-            <nav class="nav-menu" id="navMenu">
-                <a href="{{ url_for('index') }}">Accueil</a>
-                <a href="{{ url_for('services') }}">Services</a>
-                <a href="{{ url_for('apropos') }}">À propos</a>
-                <a href="{{ url_for('contact') }}">Contact</a>
-            </nav>
-        </div>
-    </header>
+{% extends "base.html" %}
 
-    <main>
-        <section class="hero">
-            <h1>Bienvenue</h1>
-            <p>Ceci est le contenu principal</p>
-        </section>
-    </main>
+{% block title %}Accueil - Dashboard{% endblock %}
 
-    <script>
-        const menuToggle = document.getElementById('menuToggle');
-        const navMenu = document.getElementById('navMenu');
+{% block content %}
+<section class="dashboard-layout">
+    <aside class="dashboard-column left">
+        <article class="box box-files">
+            <h3>Files</h3>
+            <p>Contenu de vos fichiers...</p>
+        </article>
 
-        menuToggle.addEventListener('click', function() {
-            navMenu.classList.toggle('active');
-        });
+        <article class="box box-chatbot">
+            <h3>Chat Bot</h3>
+            <p>Bonjour ! Je suis l'IA Gemini.<br>Comment puis-je vous aider ?</p>
 
-        // Fermer le menu lors du clic sur un lien
-        document.querySelectorAll('.nav-menu a').forEach(link => {
-            link.addEventListener('click', function() {
-                navMenu.classList.remove('active');
-            });
-        });
-    </script>
-</body>
-</html>
+            <form class="chatbot-form" action="#" method="post" onsubmit="return false;">
+                <input type="text" placeholder="Ecrivez votre message..." aria-label="Message chatbot">
+                <button type="submit">Envoyer</button>
+            </form>
+        </article>
+    </aside>
+
+    <section class="dashboard-column middle">
+        <article class="box box-main">
+            <p class="box-eyebrow">Dashboard</p>
+            <h1>Bienvenue {{ user.username }}</h1>
+            <p>Ceci est la page d'accueil</p>
+        </article>
+    </section>
+
+    <aside class="dashboard-column right">
+        <article class="box box-news">
+            <h3>News</h3>
+        </article>
+
+        <article class="box box-message">
+            <h3>Message</h3>
+        </article>
+    </aside>
+</section>
+{% endblock %}
