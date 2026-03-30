@@ -7,7 +7,11 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;700&family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/profile.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/messages.css') }}">
 </head>
 <body>
     <header class="site-header">
@@ -19,6 +23,7 @@
 
             <div class="header-actions">
                 {% if user %}
+                <a href="{{ url_for('messages') }}" class="header-btn">Messages</a>
                 <a href="{{ url_for('logout') }}" class="header-btn primary">Déconnexion</a>
                 <a href="{{ url_for('profile') }}" class="profile-link" aria-label="Voir le profil">
                     <span class="profile-avatar">{{ user.username[0] | upper if user.username else "U" }}</span>

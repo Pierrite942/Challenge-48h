@@ -20,6 +20,20 @@ class User(db.Model):
     posts = db.relationship("Post", backref="author", lazy=True)
     post_likes = db.relationship("PostLike", backref="user", lazy=True)
     post_comments = db.relationship("PostComment", backref="user", lazy=True)
+    sent_messages = db.relationship(
+        "PrivateMessage",
+        foreign_keys="PrivateMessage.sender_id",
+        backref="sender",
+        lazy=True,
+        cascade="all, delete-orphan",
+    )
+    received_messages = db.relationship(
+        "PrivateMessage",
+        foreign_keys="PrivateMessage.recipient_id",
+        backref="recipient",
+        lazy=True,
+        cascade="all, delete-orphan",
+    )
 
 
 class News(db.Model):
@@ -74,3 +88,13 @@ class PostComment(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
     content = db.Column(db.Text, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+
+
+class PrivateMessage(db.Model):
+    __tablename__ = "private_message"
+
+    id = db.Column(db.Integer, primary_key=True)
+    sender_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False, index=True)
+    recipient_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False, index=True)
+    content = db.Column(db.Text, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False, index=True)

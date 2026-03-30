@@ -4,12 +4,12 @@ import uuid
 
 from dotenv import load_dotenv
 from flask import Flask, flash, jsonify, redirect, render_template, request, session, url_for
-from sqlalchemy import inspect, text
+from sqlalchemy import inspect, or_, text
 from sqlalchemy.exc import IntegrityError
 from werkzeug.utils import secure_filename
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from models import News, Post, PostComment, PostLike, User, db
+from models import News, Post, PostComment, PostLike, PrivateMessage, User, db
 
 load_dotenv()
 
@@ -268,6 +268,99 @@ def profile():
         return redirect(url_for("login"))
 
     return render_template("profile.html", user=current_user)
+
+
+@app.route("/messages")
+def messages():
+    current_user = _get_current_user()
+    if current_user is None:
+        return redirect(url_for("login"))
+
+    search_query = (request.args.get("q") or "").strip()
+
+    users_query = User.query.filter(User.id != current_user.id)
+    if not current_user.is_admin:
+        users_query = users_query.filter(User.is_admin.is_(False))
+
+    if search_query:
+        users_query = users_query.filter(User.username.ilike(f"%{search_query}%"))
+
+    all_users = users_query.order_by(User.username.asc()).all()
+    visible_user_ids = {item.id for item in all_users}
+
+    selected_user = None
+    selected_user_id_raw = request.args.get("with_user", "")
+    if selected_user_id_raw.isdigit():
+        selected_candidate = db.session.get(User, int(selected_user_id_raw))
+        if selected_candidate is not None and selected_candidate.id in visible_user_ids:
+            selected_user = selected_candidate
+        else:
+            selected_user = None
+
+    if selected_user is None and all_users:
+        selected_user = all_users[0]
+
+    conversation_messages = []
+    if selected_user is not None:
+        conversation_messages = (
+            PrivateMessage.query.filter(
+                or_(
+                    (PrivateMessage.sender_id == current_user.id)
+                    & (PrivateMessage.recipient_id == selected_user.id),
+                    (PrivateMessage.sender_id == selected_user.id)
+                    & (PrivateMessage.recipient_id == current_user.id),
+                )
+            )
+            .order_by(PrivateMessage.created_at.asc())
+            .all()
+        )
+
+    return render_template(
+        "messages.html",
+        user=current_user,
+        users=all_users,
+        search_query=search_query,
+        selected_user=selected_user,
+        conversation_messages=conversation_messages,
+    )
+
+
+@app.route("/messages/send", methods=["POST"])
+def send_message():
+    current_user = _get_current_user()
+    if current_user is None:
+        return redirect(url_for("login"))
+
+    recipient_id_raw = request.form.get("recipient_id", "")
+    content = (request.form.get("content") or "").strip()
+
+    if not recipient_id_raw.isdigit():
+        flash("Destinataire invalide.")
+        return redirect(url_for("messages"))
+
+    recipient_id = int(recipient_id_raw)
+    recipient = db.session.get(User, recipient_id)
+    if recipient is None or recipient.id == current_user.id:
+        flash("Destinataire introuvable.")
+        return redirect(url_for("messages"))
+
+    if not current_user.is_admin and recipient.is_admin:
+        flash("Ce compte n'est pas disponible en messagerie privée.")
+        return redirect(url_for("messages"))
+
+    if not content:
+        flash("Le message ne peut pas être vide.")
+        return redirect(url_for("messages", with_user=recipient.id))
+
+    message = PrivateMessage(
+        sender_id=current_user.id,
+        recipient_id=recipient.id,
+        content=content,
+    )
+    db.session.add(message)
+    db.session.commit()
+
+    return redirect(url_for("messages", with_user=recipient.id))
 
 
 @app.route("/news", methods=["POST"])

@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}Messages privés{% endblock %}
+
+{% block content %}
+<section class="messages-layout">
+    <aside class="box messages-users">
+        <h3>Utilisateurs</h3>
+        <form class="messages-search-form" action="{{ url_for('messages') }}" method="GET">
+            <input
+                type="text"
+                name="q"
+                value="{{ search_query }}"
+                placeholder="Rechercher un utilisateur..."
+                aria-label="Rechercher un utilisateur"
+            >
+            <button type="submit">Rechercher</button>
+        </form>
+        {% if users %}
+            <div class="messages-user-list">
+                {% for target in users %}
+                <a
+                    href="{{ url_for('messages', with_user=target.id, q=search_query) }}"
+                    class="messages-user-item {% if selected_user and selected_user.id == target.id %}active{% endif %}"
+                >
+                    <span class="profile-avatar small">{{ target.username[0] | upper if target.username else "U" }}</span>
+                    <span>{{ target.username }}</span>
+                </a>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="news-empty">Aucun utilisateur trouvé.</p>
+        {% endif %}
+    </aside>
+
+    <section class="box messages-thread">
+        {% if selected_user %}
+            <div class="messages-thread-header">
+                <h3>Conversation avec {{ selected_user.username }}</h3>
+            </div>
+
+            <div class="messages-list">
+                {% if conversation_messages %}
+                    {% for item in conversation_messages %}
+                    <article class="message-bubble {% if item.sender_id == user.id %}mine{% else %}their{% endif %}">
+                        <p>{{ item.content }}</p>
+                        <small>{{ item.created_at.strftime('%d/%m %H:%M') }}</small>
+                    </article>
+                    {% endfor %}
+                {% else %}
+                    <p class="news-empty">Aucun message pour le moment.</p>
+                {% endif %}
+            </div>
+
+            <form class="messages-form" action="{{ url_for('send_message') }}" method="POST">
+                <input type="hidden" name="recipient_id" value="{{ selected_user.id }}">
+                <input type="text" name="content" maxlength="1000" placeholder="Écrire un message privé..." required>
+                <button type="submit" class="primary-btn">Envoyer</button>
+            </form>
+        {% else %}
+            <p class="news-empty">Sélectionne un utilisateur pour commencer la conversation.</p>
+        {% endif %}
+    </section>
+</section>
+{% endblock %}
