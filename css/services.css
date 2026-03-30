@@ -1,0 +1,196 @@
+/* ===== SERVICES PAGE STYLES ===== */
+
+/* Hero Section */
+.hero {
+    background: linear-gradient(135deg, #33e1cf, #1b1752);
+    color: white;
+    padding: 4rem 2rem;
+    text-align: center;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 15px rgba(51, 225, 207, 0.3);
+}
+
+.hero h1 {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+}
+
+.hero p {
+    font-size: 1.2rem;
+    opacity: 0.95;
+}
+
+/* Services Grid */
+.services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+/* Service Cards */
+.section-1, .section-2, .section-3 {
+    background: linear-gradient(135deg, #ffffff, #f9f9f9);
+    padding: 2rem;
+    border-radius: 8px;
+    border: 2px solid #33e1cf;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    text-align: center;
+}
+
+.section-1:hover, .section-2:hover, .section-3:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 8px 25px rgba(51, 225, 207, 0.3);
+    border-color: #ec4363;
+}
+
+.section-1 h2, .section-2 h2, .section-3 h2 {
+    color: #1b1752;
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
+    font-weight: bold;
+}
+
+.section-1 p, .section-2 p, .section-3 p {
+    color: #666;
+    line-height: 1.8;
+    font-size: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+/* Service Icons / Badge */
+.service-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+/* Learn More Button */
+.service-btn,
+.learn-more-btn {
+    display: inline-block;
+    background: linear-gradient(135deg, #ec4363, #ff90b0);
+    color: white;
+    text-decoration: none;
+    padding: 0.6rem 1.5rem;
+    border: none;
+    border-radius: 25px;
+    font-size: 0.95rem;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(236, 67, 99, 0.3);
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.service-btn:hover,
+.learn-more-btn:hover {
+    background: linear-gradient(135deg, #ff90b0, #ec4363);
+    box-shadow: 0 6px 15px rgba(236, 67, 99, 0.5);
+    transform: translateY(-2px);
+    text-decoration: none;
+    color: white;
+}
+
+/* Features List */
+.features-list {
+    background-color: #f9f9f9;
+    padding: 2rem;
+    border-radius: 8px;
+    margin-top: 2rem;
+    border-left: 5px solid #33e1cf;
+}
+
+.features-list h3 {
+    color: #1b1752;
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+}
+
+.features-list ul {
+    list-style: none;
+    padding: 0;
+}
+
+.features-list li {
+    padding: 0.75rem 0;
+    color: #666;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.features-list li:before {
+    content: "✓";
+    color: #33e1cf;
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+
+.features-list li:last-child {
+    border-bottom: none;
+}
+
+/* CTA Section */
+.cta-section {
+    background: linear-gradient(135deg, #ec4363, #ff90b0);
+    color: white;
+    padding: 3rem 2rem;
+    border-radius: 8px;
+    text-align: center;
+    margin-top: 2rem;
+    box-shadow: 0 4px 15px rgba(236, 67, 99, 0.3);
+}
+
+.cta-section h3 {
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
+    font-weight: bold;
+}
+
+.cta-section p {
+    font-size: 1.1rem;
+    margin-bottom: 1.5rem;
+}
+
+.cta-btn {
+    display: inline-block;
+    background-color: rgba(255, 255, 255, 0.2);
+    color: white;
+    padding: 0.8rem 2rem;
+    border: 2px solid white;
+    border-radius: 25px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+}
+
+.cta-btn:hover {
+    background-color: white;
+    color: #ec4363;
+    transform: translateY(-2px);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .hero h1 {
+        font-size: 1.8rem;
+    }
+    
+    .services-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .section-1, .section-2, .section-3 {
+        padding: 1.5rem;
+    }
+    
+    .cta-section {
+        padding: 2rem 1.5rem;
+    }
+}
