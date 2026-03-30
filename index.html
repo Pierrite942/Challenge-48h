@@ -3,131 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<<<<<<< HEAD
     <title>Ynook - Dashboard</title>
-=======
-    <title>Yhearts - Dashboard</title>
->>>>>>> 5db8cf0e6b0f1d5ba46ad792f745018f412f2079
     <link rel="stylesheet" href="style.css">
-    <style>
-        /* ===== CHATBOT STYLES ===== */
-        .section-chatbot {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .section-chatbot h2 {
-            margin-bottom: 0.75rem;
-            font-size: 1rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            opacity: 0.9;
-        }
-
-        #chat-container {
-            display: flex;
-            flex-direction: column;
-            flex: 1;
-            min-height: 0;
-        }
-
-        #chat-messages {
-            flex: 1;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            padding: 0.5rem 0;
-            max-height: 280px;
-            scrollbar-width: thin;
-            scrollbar-color: rgba(255,255,255,0.3) transparent;
-        }
-
-        #chat-messages::-webkit-scrollbar { width: 4px; }
-        #chat-messages::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.3); border-radius: 4px; }
-
-        .message {
-            padding: 8px 12px;
-            border-radius: 12px;
-            font-size: 0.85rem;
-            line-height: 1.4;
-            max-width: 90%;
-            word-break: break-word;
-            white-space: pre-wrap;
-        }
-
-        .bot-message {
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-            align-self: flex-start;
-            border-bottom-left-radius: 4px;
-        }
-
-        .user-message {
-            background: rgba(0, 0, 0, 0.25);
-            color: white;
-            align-self: flex-end;
-            border-bottom-right-radius: 4px;
-        }
-
-        .loading-message {
-            background: rgba(255, 255, 255, 0.15);
-            color: rgba(255,255,255,0.7);
-            align-self: flex-start;
-            border-bottom-left-radius: 4px;
-            font-style: italic;
-        }
-
-        .loading-dots span {
-            display: inline-block;
-            animation: bounce 1s infinite;
-        }
-        .loading-dots span:nth-child(2) { animation-delay: 0.15s; }
-        .loading-dots span:nth-child(3) { animation-delay: 0.3s; }
-
-        @keyframes bounce {
-            0%, 60%, 100% { transform: translateY(0); }
-            30% { transform: translateY(-4px); }
-        }
-
-        .chat-input-area {
-            display: flex;
-            gap: 6px;
-            margin-top: 8px;
-        }
-
-        #chat-input {
-            flex: 1;
-            padding: 8px 12px;
-            border: none;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            background: rgba(255,255,255,0.2);
-            color: white;
-            outline: none;
-            transition: background 0.2s;
-        }
-
-        #chat-input::placeholder { color: rgba(255,255,255,0.6); }
-        #chat-input:focus { background: rgba(255,255,255,0.3); }
-
-        #chat-send-btn {
-            padding: 8px 14px;
-            border: none;
-            border-radius: 20px;
-            background: rgba(255,255,255,0.25);
-            color: white;
-            font-size: 0.85rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background 0.2s, transform 0.1s;
-            white-space: nowrap;
-        }
-
-        #chat-send-btn:hover { background: rgba(255,255,255,0.4); }
-        #chat-send-btn:active { transform: scale(0.96); }
-        #chat-send-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-    </style>
 </head>
 <body>
     <header>
@@ -139,7 +16,7 @@
             <div class="search-bar">
                 <input type="text" placeholder="Rechercher...">
             </div>
-            
+
             <div class="header-actions">
                 <a href="html/inscription.html" class="btn-inscription">S'inscrire</a>
             </div>
@@ -163,22 +40,15 @@
                 <h2>Files</h2>
                 <p>Contenu de vos fichiers...</p>
             </section>
-            
+
             <section class="section-chatbot">
                 <h2>💬 Chat Bot</h2>
-                <div id="chat-container">
-<<<<<<< HEAD
-                    <div id="chat-messages" style="height: 150px; overflow-y: auto; margin-bottom: 10px;">
-                        <div class="message bot-message">Bonjour ! Je suis l'IA de Ynook. Comment puis-je vous aider ?</div>
-=======
-                    <div id="chat-messages">
-                        <div class="message bot-message">Bonjour ! Je suis Gemini. Comment puis-je vous aider ?</div>
->>>>>>> 5db8cf0e6b0f1d5ba46ad792f745018f412f2079
-                    </div>
-                    <div class="chat-input-area">
-                        <input type="text" id="chat-input" placeholder="Posez une question..." style="width: 70%;">
-                        <button id="chat-send-btn">Envoyer</button>
-                    </div>
+                <div id="chat-messages">
+                    <div class="message bot-message">Bonjour ! Je suis l'IA de Ynook. Comment puis-je vous aider ?</div>
+                </div>
+                <div class="chat-input-area">
+                    <input type="text" id="chat-input" placeholder="Posez une question...">
+                    <button id="chat-send-btn">Envoyer</button>
                 </div>
             </section>
         </div>
@@ -195,157 +65,12 @@
             <section class="section-news">
                 <h2>News</h2>
             </section>
-            
+
             <section class="section-message">
                 <h2>Message</h2>
             </section>
         </div>
     </main>
-
-    <script>
-<<<<<<< HEAD
-        // Gestion du Menu Déroulant
-=======
-        // ===== MENU =====
->>>>>>> 5db8cf0e6b0f1d5ba46ad792f745018f412f2079
-        const menuBtn = document.getElementById('menuBtn');
-        const menuDropdown = document.getElementById('menuDropdown');
-
-        menuBtn.addEventListener('click', function(e) {
-            e.stopPropagation();
-            menuDropdown.classList.toggle('show');
-        });
-
-        document.addEventListener('click', function(e) {
-            if (!menuBtn.contains(e.target) && !menuDropdown.contains(e.target)) {
-                menuDropdown.classList.remove('show');
-            }
-        });
-
-<<<<<<< HEAD
-        // ================= LOGIQUE CHATBOT (CORRIGÉE) =================
-        const chatMessages = document.getElementById('chat-messages');
-        const chatInput = document.getElementById('chat-input');
-        const chatSendBtn = document.getElementById('chat-send-btn');
-
-        function addMessage(text, sender) {
-            const msgDiv = document.createElement('div');
-            msgDiv.classList.add('message');
-            msgDiv.style.margin = "5px 0";
-            msgDiv.style.textAlign = sender === 'user' ? 'right' : 'left';
-            msgDiv.style.color = sender === 'user' ? '#33e1cf' : 'white';
-            msgDiv.textContent = (sender === 'user' ? "Vous : " : "IA : ") + text;
-            chatMessages.appendChild(msgDiv);
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-        }
-
-        async function sendToPython(userText) {
-            try {
-                // Appel au serveur local Python (app.py)
-                const response = await fetch('http://127.0.0.1:5000/chat', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ message: userText })
-=======
-        // ===== CHATBOT =====
-        const chatMessages = document.getElementById('chat-messages');
-        const chatInput    = document.getElementById('chat-input');
-        const chatSendBtn  = document.getElementById('chat-send-btn');
-
-        function addMessage(text, type) {
-            const div = document.createElement('div');
-            div.classList.add('message');
-
-            if (type === 'user') {
-                div.classList.add('user-message');
-                div.textContent = text;
-            } else if (type === 'loading') {
-                div.classList.add('loading-message');
-                div.id = 'loading-msg';
-                div.innerHTML = `Gemini réfléchit <span class="loading-dots"><span>.</span><span>.</span><span>.</span></span>`;
-            } else {
-                div.classList.add('bot-message');
-                div.textContent = text;
-            }
-
-            chatMessages.appendChild(div);
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-            return div;
-        }
-
-        function removeLoading() {
-            const el = document.getElementById('loading-msg');
-            if (el) el.remove();
-        }
-
-        async function sendMessage() {
-            const text = chatInput.value.trim();
-            if (!text) return;
-
-            addMessage(text, 'user');
-            chatInput.value = '';
-            chatSendBtn.disabled = true;
-            addMessage('', 'loading');
-
-            try {
-                const response = await fetch('/api/chat', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ message: text })
->>>>>>> 5db8cf0e6b0f1d5ba46ad792f745018f412f2079
-                });
-
-                const data = await response.json();
-<<<<<<< HEAD
-                
-                if (data.reply) {
-                    addMessage(data.reply, 'bot');
-                } else {
-                    addMessage("Erreur : " + (data.error || "Réponse vide"), 'bot');
-                }
-            } catch (error) {
-                addMessage("Erreur : Le serveur Python n'est pas lancé.", 'bot');
-            }
-        }
-
-        chatSendBtn.addEventListener('click', () => {
-            const text = chatInput.value.trim();
-            if (text) {
-                addMessage(text, 'user');
-                chatInput.value = '';
-                sendToPython(text);
-            }
-        });
-
-        chatInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') chatSendBtn.click();
-=======
-                removeLoading();
-
-                if (!response.ok) {
-                    addMessage("Erreur : " + (data.error || "Erreur inconnue"), 'bot');
-                    return;
-                }
-
-                if (data.response) {
-                    addMessage(data.response, 'bot');
-                } else {
-                    addMessage("Erreur : pas de réponse", 'bot');
-                }
-            } catch (err) {
-                removeLoading();
-                addMessage("Erreur de connexion au serveur", 'bot');
-            } finally {
-                chatSendBtn.disabled = false;
-                chatInput.focus();
-            }
-        }
-
-        chatSendBtn.addEventListener('click', sendMessage);
-        chatInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') sendMessage();
->>>>>>> 5db8cf0e6b0f1d5ba46ad792f745018f412f2079
-        });
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>

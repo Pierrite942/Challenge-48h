@@ -20,35 +20,59 @@ const chatMessages = document.getElementById('chat-messages');
 const chatInput = document.getElementById('chat-input');
 const chatSendBtn = document.getElementById('chat-send-btn');
 
-// Fonction pour afficher un message dans l'interface
+/**
+ * Affiche un message dans la zone de chat
+ * @param {string} text - Le texte du message
+ * @param {string} sender - 'user' ou 'bot'
+ */
 function addMessage(text, sender) {
     if (!chatMessages) return;
     
     const msgDiv = document.createElement('div');
     msgDiv.classList.add('message');
     
-    // On applique le style en fonction de l'expéditeur
+    // Style et alignement selon l'expéditeur
     if (sender === 'user') {
-        msgDiv.style.textAlign = 'right';
-        msgDiv.style.color = '#33e1cf';
+        msgDiv.classList.add('user-message');
+        msgDiv.style.alignSelf = 'flex-end';
+        msgDiv.style.backgroundColor = 'rgba(0, 0, 0, 0.25)';
         msgDiv.textContent = "Vous : " + text;
     } else {
-        msgDiv.style.textAlign = 'left';
-        msgDiv.style.color = 'white';
+        msgDiv.classList.add('bot-message');
+        msgDiv.style.alignSelf = 'flex-start';
+        msgDiv.style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
         msgDiv.textContent = "IA : " + text;
     }
     
     msgDiv.style.margin = "8px 0";
+    msgDiv.style.padding = "10px";
+    msgDiv.style.borderRadius = "10px";
+    msgDiv.style.maxWidth = "85%";
+    msgDiv.style.color = "white";
+    
     chatMessages.appendChild(msgDiv);
     
     // Scroll automatique vers le bas
     chatMessages.scrollTop = chatMessages.scrollHeight;
 }
 
-// Fonction pour envoyer le message au serveur Python (app.py)
+/**
+ * Envoie le message au serveur Flask (app.py)
+ * @param {string} userText - Le texte tapé par l'utilisateur
+ */
 async function sendToAI(userText) {
     try {
-        const response = await fetch('http://127.0.0.1:5000/chat', {
+        // On affiche un message temporaire pour faire patienter
+        const loadingId = "loading-" + Date.now();
+        const loadingDiv = document.createElement('div');
+        loadingDiv.id = loadingId;
+        loadingDiv.style.color = "rgba(255,255,255,0.6)";
+        loadingDiv.style.fontSize = "0.8rem";
+        loadingDiv.style.fontStyle = "italic";
+        loadingDiv.textContent = "Gemini réfléchit...";
+        chatMessages.appendChild(loadingDiv);
+
+        const response = await fetch('http://127.0.0.1:5000/api/chat', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -57,14 +81,18 @@ async function sendToAI(userText) {
         });
 
         const data = await response.json();
+        
+        // Supprimer l'indicateur de chargement
+        const loader = document.getElementById(loadingId);
+        if (loader) loader.remove();
 
-        if (data.reply) {
-            addMessage(data.reply, 'bot');
+        if (data.response) {
+            addMessage(data.response, 'bot');
         } else {
             addMessage("Erreur : " + (data.error || "L'IA ne répond pas."), 'bot');
         }
     } catch (error) {
-        addMessage("Le serveur Python n'est pas lancé.", 'bot');
+        addMessage("Le serveur Python n'est pas lancé ou est inaccessible.", 'bot');
     }
 }
 
@@ -73,9 +101,9 @@ if (chatSendBtn) {
     chatSendBtn.onclick = function() {
         const text = chatInput.value.trim();
         if (text !== "") {
-            addMessage(text, 'user'); // Affiche ton message
-            chatInput.value = "";      // Vide le champ
-            sendToAI(text);            // Envoie à l'IA
+            addMessage(text, 'user'); // Affiche ton message immédiatement
+            chatInput.value = "";      // Vide le champ de texte
+            sendToAI(text);            // Appelle l'API Python
         }
     };
 }

@@ -1,87 +1,133 @@
-<<<<<<< HEAD
-import os
 from flask import Flask, render_template, request, jsonify
 from flask_cors import CORS
-from anthropic import Anthropic
-from dotenv import load_dotenv
-
-load_dotenv()
-app = Flask(__name__, template_folder='.') # Cherche index.html à la racine
-CORS(app)
-
-# Remplace par ta clé si tu n'utilises pas de fichier .env
-client = Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY", "ta_cle_ici"))
-=======
-from flask import Flask, render_template, request, jsonify
 import google.generativeai as genai
 import os
+import time
+from dotenv import load_dotenv
 
-# Configuration Flask avec le bon dossier de templates et static
+# Charger la cle API depuis le fichier .env
+load_dotenv()
+
 app = Flask(__name__, template_folder='.', static_folder='.', static_url_path='')
+CORS(app)
 
-# Configuration de la clé API
-API_KEY = "AIzaSyCuzEOE7JDRqczWZMNZt6iacP_lR1cbJu0"
-genai.configure(api_key=API_KEY)
->>>>>>> 5db8cf0e6b0f1d5ba46ad792f745018f412f2079
+# Limiteur local anti-spam pour proteger le quota (1 requete / 3 secondes / IP)
+RATE_LIMIT_SECONDS = 3.0
+last_request_by_ip = {}
+
+
+def local_fallback_response(user_message):
+    """Reponse de secours quand l'API Gemini est indisponible (quota, etc.)."""
+    text = user_message.strip().lower()
+
+    if any(word in text for word in ["bonjour", "salut", "coucou", "hello"]):
+        return "Mode secours actif: Bonjour. Je suis temporairement en mode local car le quota Gemini est depasse."
+
+    if "nom" in text:
+        return "Mode secours actif: Je suis l'assistant Ynook (mode local temporaire)."
+
+    if any(word in text for word in ["aide", "help", "comment", "quoi faire"]):
+        return (
+            "Mode secours actif: je peux vous aider a reformuler un texte, proposer un plan d'action, "
+            "ou repondre simplement a des questions courtes."
+        )
+
+    return (
+        "Mode secours actif: le quota Gemini est depasse pour le moment. "
+        "Reessayez plus tard ou ajoutez une nouvelle cle API, et je repasserai en mode IA automatiquement."
+    )
+
+def get_api_key():
+    # Recharge .env pour prendre en compte une nouvelle cle sans redemarrer le serveur
+    load_dotenv(override=True)
+    return os.getenv("GEMINI_API_KEY", "").strip()
+
+
+def check_rate_limit(client_ip):
+    now = time.monotonic()
+    last_time = last_request_by_ip.get(client_ip)
+    if last_time is None:
+        last_request_by_ip[client_ip] = now
+        return 0.0
+
+    elapsed = now - last_time
+    if elapsed < RATE_LIMIT_SECONDS:
+        return RATE_LIMIT_SECONDS - elapsed
+
+    last_request_by_ip[client_ip] = now
+    return 0.0
 
 @app.route('/')
 def index():
     return render_template('index.html')
 
-<<<<<<< HEAD
-@app.route('/chat', methods=['POST'])
-def chat():
-    data = request.json
-    user_message = data.get("message")
-    try:
-        message = client.messages.create(
-            model="claude-3-5-sonnet-20241022",
-            max_tokens=1024,
-            messages=[{"role": "user", "content": user_message}]
-        )
-        return jsonify({"reply": message.content[0].text})
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
-if __name__ == '__main__':
-    app.run(debug=True, port=5000)
-=======
 @app.route('/api/chat', methods=['POST'])
 def chat():
     try:
+        client_ip = request.remote_addr or "unknown"
+        wait_seconds = check_rate_limit(client_ip)
+        if wait_seconds > 0:
+            return jsonify({
+                'error': f"Trop de messages. Reessayez dans {wait_seconds:.1f} seconde(s)."
+            }), 429
+
+        api_key = get_api_key()
+        if api_key:
+            genai.configure(api_key=api_key)
+        else:
+            return jsonify({'error': 'Cle API manquante dans le fichier .env'}), 500
+
         data = request.json
         user_message = data.get('message', '').strip()
 
         if not user_message:
             return jsonify({'error': 'Message vide'}), 400
 
-        # Utiliser la bibliothèque Google Generative AI
-        model = genai.GenerativeModel("gemini-2.0-flash")
-        response = model.generate_content(user_message)
-        
+        # Fallback de modeles: Gemini d'abord, puis Gemma si quota Gemini depasse
+        model_names = [
+            "gemini-2.0-flash",
+            "gemini-1.5-flash",
+            "gemini-1.5-flash-latest",
+            "gemma-3-1b-it",
+            "gemma-3-4b-it",
+        ]
+        response = None
+        last_err = None
+        for model_name in model_names:
+            try:
+                model = genai.GenerativeModel(model_name)
+                response = model.generate_content(user_message)
+                break
+            except Exception as model_err:
+                last_err = model_err
+                err_text = str(model_err).lower()
+                # Si quota depasse pour un modele, on tente le modele suivant
+                if "429" in err_text or "quota" in err_text or "resource_exhausted" in err_text:
+                    continue
+                if "not found" in err_text or "not supported" in err_text or "404" in err_text:
+                    continue
+                raise
+
+        if response is None and last_err is not None:
+            raise last_err
+
         if response and response.text:
             return jsonify({'response': response.text})
         else:
-            return jsonify({'error': 'Pas de réponse de l\'IA'}), 500
-            
+            return jsonify({'error': "L'IA n'a pas pu generer de texte."}), 500
+
     except Exception as e:
-        print(f"Erreur dans /api/chat: {str(e)}")
-        return jsonify({'error': f"Erreur: {str(e)}"}), 500
-
-@app.route('/apropos')
-def apropos():
-    return render_template('html/apropos.html')
-
-@app.route('/services')
-def services():
-    return render_template('html/services.html')
-
-@app.route('/contact')
-def contact():
-    return render_template('html/contact.html')
+        err_msg = str(e)
+        if "API_KEY_INVALID" in err_msg or "API Key not found" in err_msg:
+            return jsonify({'error': "Cle API Gemini invalide. Regenerer une cle sur ai.google.dev et mettez-la dans .env."}), 401
+        if "429" in err_msg or "quota" in err_msg.lower():
+            return jsonify({
+                'response': local_fallback_response(user_message),
+                'fallback': True,
+                'warning': 'Quota Gemini depasse. Reponse locale de secours.'
+            }), 200
+        return jsonify({'error': f"Erreur serveur : {err_msg}"}), 500
 
 if __name__ == '__main__':
-    print("🚀 Démarrage du serveur Flask...")
-    print("✅ API Gemini configurée")
-    app.run(debug=True, host='127.0.0.1', port=5000)
->>>>>>> 5db8cf0e6b0f1d5ba46ad792f745018f412f2079
+    print("Serveur Ynook lance sur http://127.0.0.1:5000")
+    app.run(debug=True, port=5000)
