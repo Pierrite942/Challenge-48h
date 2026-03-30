@@ -23,6 +23,7 @@ body {
     font-family: "Manrope", sans-serif;
     background: var(--bg);
     color: var(--text);
+    overflow-x: hidden;
 }
 
 a {
@@ -105,22 +106,34 @@ a {
 
 .post-drawer {
     position: fixed;
-    top: 0;
-    right: -360px;
-    width: min(340px, 92vw);
-    height: 100vh;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -46%);
+    width: min(760px, calc(100vw - 24px));
+    max-height: min(86vh, 720px);
     z-index: 40;
     background: #f5f5f5;
-    border-left: 1px solid #cccccc;
-    padding: 18px;
-    transition: right 0.28s ease;
+    border: 1px solid #cccccc;
+    border-radius: 12px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.28);
+    padding: 22px;
+    overflow: auto;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.22s ease, transform 0.22s ease;
     display: grid;
     align-content: start;
     gap: 12px;
 }
 
+.post-drawer * {
+    max-width: 100%;
+}
+
 .post-drawer.open {
-    right: 0;
+    transform: translate(-50%, -50%);
+    opacity: 1;
+    pointer-events: auto;
 }
 
 .post-drawer-header {
@@ -130,11 +143,18 @@ a {
     gap: 10px;
 }
 
+.post-drawer h3 {
+    margin: 0;
+    font-size: 1.5rem;
+    line-height: 1.1;
+}
+
 .close-drawer {
     border: 1px solid #bbbbbb;
     border-radius: 6px;
-    padding: 6px 10px;
+    padding: 5px 9px;
     background: #ffffff;
+    font-size: 0.82rem;
     cursor: pointer;
 }
 
@@ -280,9 +300,9 @@ a {
 }
 
 .feed-form {
-    margin: 10px 0 12px;
+    margin: 8px 0 8px;
     display: grid;
-    gap: 7px;
+    gap: 10px;
 }
 
 .feed-form textarea {
@@ -290,13 +310,13 @@ a {
     border: 1px solid rgba(0, 0, 0, 0.2);
     border-radius: 4px;
     font: inherit;
-    font-size: 0.9rem;
-    padding: 8px;
+    font-size: 0.84rem;
+    padding: 10px;
     background: rgba(255, 255, 255, 0.93);
 }
 
 .feed-form textarea {
-    min-height: 86px;
+    min-height: 180px;
     resize: vertical;
 }
 
@@ -309,12 +329,12 @@ a {
 .media-inputs label {
     display: grid;
     gap: 4px;
-    font-size: 0.74rem;
+    font-size: 0.72rem;
     font-weight: 700;
 }
 
 .media-inputs input {
-    font-size: 0.75rem;
+    font-size: 0.72rem;
 }
 
 .feed-form button {
@@ -323,9 +343,9 @@ a {
     border-radius: 4px;
     background: rgba(255, 255, 255, 0.88);
     color: #303030;
-    font-size: 0.85rem;
+    font-size: 0.78rem;
     font-weight: 700;
-    padding: 6px 10px;
+    padding: 6px 12px;
     cursor: pointer;
 }
 
@@ -543,9 +563,15 @@ a {
     }
 
     .post-drawer {
-        width: 100%;
-        max-width: none;
-        right: -100%;
+        width: calc(100vw - 14px);
+        max-height: 88vh;
+        padding: 18px;
+    }
+}
+
+@media (max-width: 560px) {
+    .media-inputs {
+        grid-template-columns: 1fr;
     }
 }
 
