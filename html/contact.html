@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact - Mon Site</title>
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+    <!-- HEADER -->
+    <header>
+        <div class="header-container">
+            <!-- Logo à gauche -->
+            <div class="logo">
+                <img src="../image/h__1_-removebg-preview.png" alt="Logo du site">
+            </div>
+
+            <!-- Menu à droite -->
+            <div class="menu-section">
+                <button class="menu-btn" id="menuBtn">☰ Menu</button>
+                <div class="dropdown-menu" id="menuDropdown">
+                    <a href="../index.html">Accueil</a>
+                    <a href="services.html">Services</a>
+                    <a href="apropos.html">À propos</a>
+                    <a href="contact.html">Contact</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <main>
+        <section class="hero">
+            <h1>Nous contacter</h1>
+            <p>Des questions ? Contactez-nous !</p>
+        </section>
+
+        <section class="section-1">
+            <h2>Par email</h2>
+            <p>Envoyez-nous un message</p>
+        </section>
+
+        <section class="section-2">
+            <h2>Par téléphone</h2>
+            <p>Appelez-nous directement</p>
+        </section>
+
+        <section class="section-3">
+            <h2>Réseaux sociaux</h2>
+            <p>Suivez-nous en ligne</p>
+        </section>
+    </main>
+
+    <script>
+        const menuBtn = document.getElementById('menuBtn');
+        const menuDropdown = document.getElementById('menuDropdown');
+
+        menuBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            menuDropdown.classList.toggle('show');
+        });
+
+        document.addEventListener('click', function(e) {
+            if (!menuBtn.contains(e.target) && !menuDropdown.contains(e.target)) {
+                menuDropdown.classList.remove('show');
+            }
+        });
+    </script>
+</body>
+</html>
