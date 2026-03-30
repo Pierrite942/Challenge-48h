@@ -32,6 +32,28 @@
     <aside class="dashboard-column right">
         <article class="box box-news">
             <h3>News</h3>
+
+            {% if user.is_admin %}
+            <form class="news-form" action="{{ url_for('add_news') }}" method="POST">
+                <input type="text" name="title" placeholder="Titre" maxlength="120" required>
+                <textarea name="content" placeholder="Contenu de la news..." required></textarea>
+                <button type="submit">Publier</button>
+            </form>
+            {% endif %}
+
+            <div class="news-list">
+                {% if news_list %}
+                    {% for item in news_list %}
+                    <article class="news-item">
+                        <strong>{{ item.title }}</strong>
+                        <p>{{ item.content }}</p>
+                        <small>{{ item.created_at.strftime('%d/%m %H:%M') }} - {{ item.author.username }}</small>
+                    </article>
+                    {% endfor %}
+                {% else %}
+                    <p class="news-empty">Aucune news pour le moment.</p>
+                {% endif %}
+            </div>
         </article>
 
         <article class="box box-message">

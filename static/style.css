@@ -226,6 +226,76 @@ a {
     color: #4b4b74;
 }
 
+.news-form {
+    margin: 10px 0 12px;
+    display: grid;
+    gap: 7px;
+}
+
+.news-form input,
+.news-form textarea {
+    width: 100%;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+    font: inherit;
+    font-size: 0.8rem;
+    padding: 6px;
+    background: rgba(255, 255, 255, 0.93);
+}
+
+.news-form textarea {
+    min-height: 62px;
+    resize: vertical;
+}
+
+.news-form button {
+    width: fit-content;
+    border: 1px solid rgba(0, 0, 0, 0.35);
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.88);
+    color: #303030;
+    font-size: 0.78rem;
+    font-weight: 700;
+    padding: 4px 8px;
+    cursor: pointer;
+}
+
+.news-list {
+    display: grid;
+    gap: 8px;
+    max-height: 200px;
+    overflow: auto;
+    padding-right: 2px;
+}
+
+.news-item {
+    border-radius: 6px;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    background: rgba(255, 255, 255, 0.5);
+    padding: 6px;
+}
+
+.news-item strong {
+    display: block;
+    font-size: 0.86rem;
+    margin-bottom: 3px;
+}
+
+.news-item p {
+    font-size: 0.8rem;
+    margin: 0 0 4px;
+}
+
+.news-item small {
+    font-size: 0.68rem;
+    opacity: 0.85;
+}
+
+.news-empty {
+    font-size: 0.82rem;
+    opacity: 0.9;
+}
+
 .card-form {
     max-width: 460px;
     margin: 26px auto 0;
