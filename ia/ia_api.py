@@ -1,33 +1,66 @@
 from google import genai
+import os
+from dotenv import load_dotenv
+
+# Charger les variables d'environnement depuis le fichier .env
+load_dotenv()
+
+def test_api_simple():
+    """Fonction de test simple pour l'API Gemini"""
+    try:
+        api_key = os.getenv("GEMINI_API_KEY")
+        if not api_key:
+            print("Erreur: La clé API GEMINI_API_KEY n'est pas définie dans .env")
+            return
+            
+        client = genai.Client(api_key=api_key)
+        
+        response = client.models.generate_content(
+            model="gemini-2.0-flash",
+            contents="Explain how AI works in a few words",
+        )
+        
+        print(response.text)
+    except Exception as e:
+        print(f"Erreur lors du test: {e}")
 
 def main():
-    # Remplacement de la clé API et configuration du client
-    client = genai.Client(api_key="YAIzaSyBrYM2z5U6k5-zSBuliFFmEdPkHQPC9MlY")
+    # Configuration du client Gemini
+    api_key = os.getenv("GEMINI_API_KEY")
+    if not api_key:
+        print("Erreur: La clé API GEMINI_API_KEY n'est pas définie.")
+        print("Veuillez définir la variable d'environnement GEMINI_API_KEY dans .env")
+        return
+    
+    client = genai.Client(api_key=api_key)
 
     print("=== Assistant IA Gemini ===")
+    print("0. Test API Simple")
     print("1. Chatbot général (discussion libre)")
     print("2. Générer un résumé de profil")
     print("3. Modérer une publication")
     print("Tapez 'exit' pour quitter.")
 
     while True:
-        mode = input("\n[Menu Principal] Choisissez un mode (1, 2, 3 ou exit): ")
+        mode = input("\n[Menu Principal] Choisissez un mode (0, 1, 2, 3 ou exit): ")
 
         if mode.lower() == 'exit':
             print("Au revoir !")
             break
             
+        elif mode == '0':
+            print("\n--- Test API Simple ---")
+            test_api_simple()
+            
         elif mode == '1':
             print("\n--- Mode Chatbot Normal activé (tapez 'retour' pour le menu) ---")
+            chat = client.chats.create(model="gemini-2.0-flash")
             while True:
                 user_input = input("Vous: ")
                 if user_input.lower() == 'retour':
                     break
                 try:
-                    response = client.models.generate_content(
-                        model="gemini-3-flash-preview",
-                        contents=user_input
-                    )
+                    response = chat.send_message(user_input)
                     print(f"Gemini: {response.text}")
                 except Exception as e:
                     print(f"Erreur: {e}")
@@ -39,7 +72,7 @@ def main():
             try:
                 print("Génération en cours...")
                 response = client.models.generate_content(
-                    model="gemini-3-flash-preview",
+                    model="gemini-2.0-flash",
                     contents=prompt
                 )
                 print(f"Résumé :\n{response.text}")
@@ -53,7 +86,7 @@ def main():
             try:
                 print("Analyse en cours...")
                 response = client.models.generate_content(
-                    model="gemini-3-flash-preview",
+                    model="gemini-2.0-flash",
                     contents=prompt
                 )
                 print(f"Avis de modération :\n{response.text}")

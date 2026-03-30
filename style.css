@@ -60,29 +60,30 @@ header {
 
 .btn-inscription {
     display: inline-block;
-    background: linear-gradient(135deg, #ec4363, #ff90b0);
-    color: white;
+    background-color: transparent;
+    color: #33e1cf;
     text-decoration: none;
-    padding: 0.6rem 1.5rem;
-    font-size: 1rem;
-    font-weight: bold;
-    border-radius: 25px;
-    box-shadow: 0 4px 10px rgba(236, 67, 99, 0.3);
+    padding: 0.6rem 1.2rem;
+    font-size: 0.95rem;
+    font-weight: 500;
+    border: 2px solid #33e1cf;
+    border-radius: 6px;
+    box-shadow: none;
     transition: all 0.3s ease;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+    text-transform: none;
+    letter-spacing: 0px;
 }
 
 .btn-inscription:hover {
-    background: linear-gradient(135deg, #ff90b0, #ec4363);
-    box-shadow: 0 6px 15px rgba(236, 67, 99, 0.5);
-    transform: translateY(-2px);
-    color: white;
+    background-color: #33e1cf;
+    color: #2b267a;
+    box-shadow: 0 2px 8px rgba(51, 225, 207, 0.3);
+    transform: none;
 }
 
 /* ===== MENU DÉROULANT (DROITE) ===== */
 .menu-section {
-    position: relative; /* Indispensable pour placer le menu par rapport au bouton */
+    position: relative;
 }
 
 .menu-btn {
@@ -101,12 +102,11 @@ header {
     color: black;
 }
 
-/* Le menu lui-même */
 .dropdown-menu {
-    display: none; /* CACHÉ PAR DÉFAUT */
+    display: none;
     position: absolute;
-    top: calc(100% + 15px); /* Juste en dessous du bouton */
-    right: 0;               /* Aligné à droite */
+    top: calc(100% + 15px);
+    right: 0;
     background-color: #ffffff;
     border: 2px solid #ec4363;
     border-radius: 8px;
@@ -116,7 +116,6 @@ header {
     flex-direction: column;
 }
 
-/* Quand le JS ajoute la classe .show */
 .dropdown-menu.show {
     display: flex !important;
 }
@@ -127,10 +126,6 @@ header {
     text-decoration: none;
     border-bottom: 1px solid #eee;
     transition: 0.2s;
-}
-
-.dropdown-menu a:last-child {
-    border-bottom: none;
 }
 
 .dropdown-menu a:hover {
@@ -155,10 +150,54 @@ main {
 }
 
 .section-files { background-color: #ff90b0; height: 400px; border-radius: 8px; padding: 1.5rem; color: white; }
-.section-chatbot { background-color: #ec4363; min-height: 400px; border-radius: 8px; padding: 1rem; color: white; display:flex; flex-direction: column;}
+
+/* AJOUTS POUR LE CHATBOT IA */
+.section-chatbot { 
+    background-color: #ec4363; 
+    min-height: 400px; 
+    border-radius: 8px; 
+    padding: 1rem; 
+    color: white; 
+    display: flex; 
+    flex-direction: column;
+}
+
+#chat-messages {
+    flex-grow: 1;
+    height: 250px;
+    overflow-y: auto;
+    background: rgba(0, 0, 0, 0.1);
+    margin: 10px 0;
+    padding: 10px;
+    border-radius: 5px;
+    font-size: 0.9rem;
+}
+
+.chat-input-area {
+    display: flex;
+    gap: 5px;
+}
+
+#chat-input {
+    flex-grow: 1;
+    padding: 8px;
+    border-radius: 4px;
+    border: none;
+    outline: none;
+}
+
+#chat-send-btn {
+    padding: 8px 12px;
+    background-color: #33e1cf;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
 .section-dashboard { background-color: #f5f5f5; border-radius: 8px; padding: 2rem; border: 2px solid #ccc; }
 .section-news { background-color: #33e1cf; height: 200px; border-radius: 8px; padding: 1.5rem; }
-.section-message { background-color: #1b1752; height: 350px; border-radius: 8px; padding: 1.5rem; border: 2px solid #ccc; }
+.section-message { background-color: #2d2d33; height: 350px; border-radius: 8px; padding: 1.5rem; border: 2px solid #ccc; }
 
 /* Responsive */
 @media (max-width: 1024px) {
