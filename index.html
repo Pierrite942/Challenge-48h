@@ -9,38 +9,26 @@
 <body>
     <header>
         <div class="header-container">
-            <div class="logo">Mon Site</div>
-            <button class="menu-toggle" id="menuToggle">☰</button>
-            <nav class="nav-menu" id="navMenu">
-                <a href="#home">Accueil</a>
-                <a href="#services">Services</a>
-                <a href="#about">À propos</a>
-                <a href="#contact">Contact</a>
-            </nav>
+            <div class="logo">
+                <img src="image/h__1_-removebg-preview.png" alt="Logo">
+            </div>
+            <div class="menu-section">
+                <button class="menu-button" id="menuBtn">☰ Menu</button>
+                <div class="menu-dropdown" id="menuDropdown">
+                    <a href="index.html">Accueil</a>
+                    <a href="html/services.html">Services</a>
+                    <a href="html/apropos.html">À propos</a>
+                    <a href="html/contact.html">Contact</a>
+                </div>
+            </div>
         </div>
     </header>
 
     <main>
-        <section class="hero">
-            <h1>Bienvenue</h1>
-            <p>Ceci est le contenu principal</p>
-        </section>
+        <h1>Bienvenue</h1>
+        <p>Ceci est la page d'accueil</p>
     </main>
 
-    <script>
-        const menuToggle = document.getElementById('menuToggle');
-        const navMenu = document.getElementById('navMenu');
-
-        menuToggle.addEventListener('click', function() {
-            navMenu.classList.toggle('active');
-        });
-
-        // Fermer le menu lors du clic sur un lien
-        document.querySelectorAll('.nav-menu a').forEach(link => {
-            link.addEventListener('click', function() {
-                navMenu.classList.remove('active');
-            });
-        });
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>
