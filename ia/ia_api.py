@@ -1,7 +1,7 @@
 import google.generativeai as genai
 
 # Configuration de la clé API
-API_KEY = "AIzaSyBrYM2z5U6k5-zSBuliFFmEdPkHQPC9MlY"
+API_KEY = "AIzaSyCuzEOE7JDRqczWZMNZt6iacP_lR1cbJu0"
 genai.configure(api_key=API_KEY)
 
 def chat_simple(user_message):
