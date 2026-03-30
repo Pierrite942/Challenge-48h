@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mon Site</title>
+    <title>Mon Site - Dashboard</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -12,9 +12,14 @@
             <div class="logo">
                 <img src="image/h__1_-removebg-preview.png" alt="Logo">
             </div>
+
+            <div class="search-bar">
+                <input type="text" placeholder="Rechercher...">
+            </div>
+
             <div class="menu-section">
-                <button class="menu-button" id="menuBtn">☰ Menu</button>
-                <div class="menu-dropdown" id="menuDropdown">
+                <button class="menu-btn" id="menuBtn">☰ Menu</button>
+                <div class="dropdown-menu" id="menuDropdown">
                     <a href="index.html">Accueil</a>
                     <a href="html/services.html">Services</a>
                     <a href="html/apropos.html">À propos</a>
@@ -25,10 +30,50 @@
     </header>
 
     <main>
-        <h1>Bienvenue</h1>
-        <p>Ceci est la page d'accueil</p>
+        <div class="left-column">
+            <section class="section-files">
+                <h2>Files</h2>
+                <p>Contenu de vos fichiers...</p>
+            </section>
+            
+            <section class="section-chatbot">
+                <h2>Chat Bot</h2>
+            </section>
+        </div>
+
+        <section class="section-dashboard">
+            <h2>Dashboard</h2>
+            <div class="hero">
+                <h1>Bienvenue</h1>
+                <p>Ceci est la page d'accueil</p>
+            </div>
+            </section>
+
+        <div class="right-column">
+            <section class="section-news">
+                <h2>News</h2>
+            </section>
+            
+            <section class="section-message">
+                <h2>Message</h2>
+            </section>
+        </div>
     </main>
 
-    <script src="script.js"></script>
+    <script>
+        const menuBtn = document.getElementById('menuBtn');
+        const menuDropdown = document.getElementById('menuDropdown');
+
+        menuBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            menuDropdown.classList.toggle('show');
+        });
+
+        document.addEventListener('click', function(e) {
+            if (!menuBtn.contains(e.target) && !menuDropdown.contains(e.target)) {
+                menuDropdown.classList.remove('show');
+            }
+        });
+    </script>
 </body>
 </html>
