@@ -49,5 +49,97 @@
 
         {% block content %}{% endblock %}
     </main>
+
+    {% if user %}
+    <div class="gemini-widget" id="gemini-widget">
+        <button type="button" class="gemini-fab" id="gemini-fab" aria-label="Ouvrir Gemini">✦</button>
+
+        <section class="gemini-panel" id="gemini-panel" aria-hidden="true">
+            <div class="gemini-panel-header">
+                <strong>Gemini</strong>
+                <button type="button" id="gemini-close" class="gemini-close-btn">Fermer</button>
+            </div>
+
+            <div class="gemini-messages" id="gemini-messages" aria-live="polite"></div>
+
+            <form class="gemini-form" id="gemini-form" action="#" method="post" onsubmit="return false;">
+                <input id="gemini-input" type="text" placeholder="Écrire à Gemini..." maxlength="1500" aria-label="Message Gemini">
+                <button type="submit">Envoyer</button>
+            </form>
+        </section>
+    </div>
+
+    <script>
+        (() => {
+            const fab = document.getElementById("gemini-fab");
+            const panel = document.getElementById("gemini-panel");
+            const closeBtn = document.getElementById("gemini-close");
+            const form = document.getElementById("gemini-form");
+            const input = document.getElementById("gemini-input");
+            const list = document.getElementById("gemini-messages");
+
+            if (!fab || !panel || !closeBtn || !form || !input || !list) {
+                return;
+            }
+
+            const appendMessage = (author, text, role) => {
+                const node = document.createElement("p");
+                node.className = `gemini-message ${role}`;
+
+                const strong = document.createElement("strong");
+                strong.textContent = `${author} : `;
+                node.append(strong);
+                node.append(document.createTextNode(text || ""));
+
+                list.append(node);
+                list.scrollTop = list.scrollHeight;
+            };
+
+            const openPanel = () => {
+                panel.classList.add("open");
+                panel.setAttribute("aria-hidden", "false");
+                input.focus();
+            };
+
+            const closePanel = () => {
+                panel.classList.remove("open");
+                panel.setAttribute("aria-hidden", "true");
+            };
+
+            fab.addEventListener("click", () => {
+                if (panel.classList.contains("open")) {
+                    closePanel();
+                } else {
+                    openPanel();
+                }
+            });
+
+            closeBtn.addEventListener("click", closePanel);
+
+            form.addEventListener("submit", async () => {
+                const userText = input.value.trim();
+                if (!userText) {
+                    return;
+                }
+
+                appendMessage("Vous", userText, "user");
+                input.value = "";
+
+                try {
+                    const response = await fetch("/api/ai/chat", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ message: userText }),
+                    });
+
+                    const payload = await response.json();
+                    appendMessage("Gemini", payload.reply || "Pas de réponse.", "bot");
+                } catch (_error) {
+                    appendMessage("Gemini", "Erreur réseau, réessaie.", "bot");
+                }
+            });
+        })();
+    </script>
+    {% endif %}
 </body>
 </html>
