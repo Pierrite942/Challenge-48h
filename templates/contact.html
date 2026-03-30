@@ -1,64 +1,62 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contact - Mon Site</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
-<body>
-    <!-- HEADER -->
-    <header>
-        <div class="header-container">
-            <div class="logo">Mon Site</div>
+{% extends "base.html" %}
 
-            <!-- Menu à droite -->
-            <div class="menu-section">
-                <button class="menu-button" id="menuBtn">☰ Menu</button>
-                <div class="menu-dropdown" id="menuDropdown">
-                    <a href="{{ url_for('index') }}">Accueil</a>
-                    <a href="{{ url_for('services') }}">Services</a>
-                    <a href="{{ url_for('apropos') }}">À propos</a>
-                    <a href="{{ url_for('contact') }}">Contact</a>
-                </div>
+{% block title %}Contact - Mon Site{% endblock %}
+
+{% block content %}
+    <section class="hero">
+        <h1>Nous contacter</h1>
+        <p>Envoyez un message, il sera enregistré dans PostgreSQL.</p>
+    </section>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <section class="flash-stack">
+                {% for category, message in messages %}
+                    <div class="flash {{ category }}">{{ message }}</div>
+                {% endfor %}
+            </section>
+        {% endif %}
+    {% endwith %}
+
+    <section class="contact-layout">
+        <article class="contact-card">
+            <h2>Envoyer un message</h2>
+            <form method="post" class="contact-form">
+                <label>
+                    Nom
+                    <input type="text" name="name" placeholder="Ton nom" required>
+                </label>
+                <label>
+                    Email
+                    <input type="email" name="email" placeholder="ton@email.com" required>
+                </label>
+                <label>
+                    Sujet
+                    <input type="text" name="subject" placeholder="Objet du message" required>
+                </label>
+                <label>
+                    Message
+                    <textarea name="message" rows="6" placeholder="Écris ton message ici" required></textarea>
+                </label>
+                <button type="submit" class="primary-btn">Enregistrer dans la base</button>
+            </form>
+        </article>
+
+        <article class="contact-card">
+            <h2>Derniers messages</h2>
+            <div class="contact-list">
+                {% for item in recent_messages %}
+                    <div class="contact-entry">
+                        <strong>{{ item.name }}</strong>
+                        <span>{{ item.email }}</span>
+                        <h3>{{ item.subject }}</h3>
+                        <p>{{ item.message }}</p>
+                        <small>{{ item.created_at }}</small>
+                    </div>
+                {% else %}
+                    <p>Aucun message enregistré pour le moment.</p>
+                {% endfor %}
             </div>
-        </div>
-    </header>
-
-    <!-- MAIN CONTENT -->
-    <main>
-        <section class="hero">
-            <h1>Nous contacter</h1>
-            <p>Des questions ? Contactez-nous !</p>
-        </section>
-    </main>
-
-    <!-- FOOTER -->
-    <footer>
-        <p>&copy; 2026 Mon Site. Tous droits réservés.</p>
-    </footer>
-
-    <script>
-        const menuBtn = document.getElementById('menuBtn');
-        const dropdownMenu = document.getElementById('menuDropdown');
-
-        // Ouvrir/fermer le menu
-        menuBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            dropdownMenu.classList.toggle('show');
-        });
-
-        // Fermer quand on clique ailleurs
-        document.addEventListener('click', () => {
-            dropdownMenu.classList.remove('show');
-        });
-
-        // Fermer quand on clique sur un lien
-        document.querySelectorAll('.menu-dropdown a').forEach(link => {
-            link.addEventListener('click', () => {
-                dropdownMenu.classList.remove('show');
-            });
-        });
-    </script>
-</body>
-</html>
+        </article>
+    </section>
+{% endblock %}

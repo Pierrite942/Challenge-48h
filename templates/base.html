@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Mon Site{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    {% block head %}{% endblock %}
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <a class="logo" href="{{ url_for('index') }}">Mon Site</a>
+            <button class="menu-button" id="menuBtn" type="button">☰ Menu</button>
+            <nav class="menu-dropdown" id="menuDropdown">
+                <a href="{{ url_for('index') }}">Accueil</a>
+                <a href="{{ url_for('services') }}">Services</a>
+                <a href="{{ url_for('apropos') }}">À propos</a>
+                <a href="{{ url_for('contact') }}">Contact</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Mon Site. Tous droits réservés.</p>
+    </footer>
+
+    <script>
+        const menuBtn = document.getElementById('menuBtn');
+        const menuDropdown = document.getElementById('menuDropdown');
+
+        if (menuBtn && menuDropdown) {
+            menuBtn.addEventListener('click', (event) => {
+                event.stopPropagation();
+                menuDropdown.classList.toggle('show');
+            });
+
+            document.addEventListener('click', (event) => {
+                if (!menuBtn.contains(event.target) && !menuDropdown.contains(event.target)) {
+                    menuDropdown.classList.remove('show');
+                }
+            });
+        }
+    </script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>
