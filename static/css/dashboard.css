@@ -532,21 +532,21 @@
 }
 
 .like-btn:hover {
-    background: #ffdbeb;
-    border-color: #ff69b4;
+    background: #E8F5F3;
+    border-color: #187B73;
 }
 
 .like-btn.active {
-    background: #ffdbeb;
-    border-color: #ff69b4;
-    color: #ff1493;
+    background: #E8F5F3;
+    border-color: #187B73;
+    color: #187B73;
 }
 
 .admin-delete-btn {
-    border: 1px solid #d26d6d;
+    border: 1px solid #0D5D52;
     border-radius: 999px;
-    background: #fff2f2;
-    color: #983a3a;
+    background: #E8F5F3;
+    color: #0D5D52;
     padding: 5px 10px;
     font-weight: 700;
     cursor: pointer;
@@ -555,7 +555,7 @@
 }
 
 .admin-delete-btn:hover {
-    background: #ffe0e0;
+    background: #E8F5F3;
 }
 
 .comment-list {

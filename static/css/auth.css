@@ -45,7 +45,7 @@
 .primary-btn {
     border: 0;
     border-radius: 8px;
-    background: linear-gradient(135deg, #ff4c78, #e76393);
+    background: linear-gradient(135deg, #187B73, #0D5D52);
     color: #ffffff;
     font-size: 0.9rem;
     font-weight: 800;
@@ -63,5 +63,5 @@
 
 .switch-link a {
     font-weight: 700;
-    color: #cc3f6d;
+    color: #187B73;
 }

@@ -4,7 +4,6 @@
 
 ```powershell
 py -m venv .venv
-.\.venv\Scripts\Activate.ps1
 ```
 
 ## 2) Installer tous les packages nécessaires
