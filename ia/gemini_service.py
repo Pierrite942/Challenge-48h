@@ -83,27 +83,3 @@ def chat_simple(user_message: str) -> str:
     except Exception as exc:
         return _format_error(exc)
 
-
-def generer_resume_profil(infos: str) -> str:
-    try:
-        prompt = (
-            "Tu es un expert professionnel RH. "
-            "Rédige un résumé de profil professionnel concis, valorisant et accrocheur "
-            f"en quelques phrases à partir des informations suivantes : {infos}"
-        )
-        return _generate_with_fallback(prompt)
-    except Exception as exc:
-        return _format_error(exc)
-
-
-def moderer_publication(post: str) -> str:
-    try:
-        prompt = (
-            "Tu es le modérateur automatisé du réseau. Analyse le message suivant. "
-            "Indique si le contenu est 'APPROPRIÉ' ou 'REJETÉ' "
-            "(ex: insultes, violence, haine, spam) et donne une explication courte : "
-            f"'{post}'"
-        )
-        return _generate_with_fallback(prompt)
-    except Exception as exc:
-        return _format_error(exc)
