@@ -117,11 +117,102 @@
             <p>Tu veux poster ?</p>
             <button type="button" id="open-drawer" class="open-drawer-btn">Nouveau post</button>
         </article>
+
+        <article class="box box-chatbot">
+            <h3>💬 Chat Bot</h3>
+            <div id="chat-container">
+                <div id="chat-messages-widget" class="chat-messages-widget">
+                    <div class="message bot-message">Bonjour ! Je suis l'assistant IA. Comment puis-je vous aider ?</div>
+                </div>
+                <div class="chat-input-area">
+                    <input type="text" id="chat-input-widget" placeholder="Écrivez votre message...">
+                    <button id="chat-send-btn-widget" class="chat-send-btn-widget">Envoyer</button>
+                </div>
+            </div>
+        </article>
     </aside>
 </section>
 
 <script id="initial-posts-data" type="application/json">{{ serialized_posts | tojson }}</script>
 <script id="is-admin-data" type="application/json">{{ user.is_admin | tojson }}</script>
+
+<script>
+    // ===== CHATBOT WIDGET =====
+    const chatMessagesWidget = document.getElementById('chat-messages-widget');
+    const chatInputWidget = document.getElementById('chat-input-widget');
+    const chatSendBtn = document.getElementById('chat-send-btn-widget');
+
+    function addChatMessage(text, isUser = false) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `chat-message ${isUser ? 'user' : 'bot'}`;
+        messageDiv.textContent = text;
+        chatMessagesWidget.appendChild(messageDiv);
+        chatMessagesWidget.scrollTop = chatMessagesWidget.scrollHeight;
+    }
+
+    chatFormWidget.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const message = chatInputWidget.value.trim();
+        if (!message) return;
+
+        addChatMessage(message, true);
+        chatInputWidget.value = '';
+        chatInputWidget.focus();
+
+        const loadingMsg = document.createElement('div');
+        loadingMsg.className = 'chat-message bot loading';
+        loadingMsg.innerHTML = '<span class="loading-dots"><span>.</span><span>.</span><span>.</span></span>';
+        loadingMsg.id = 'loading-msg';
+        chatMessagesWidget.appendChild(loadingMsg);
+        chatMessagesWidget.scrollTop = chatMessagesWidget.scrollHeight;
+
+        try {
+            const response = await fetch('/api/ai/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: message })
+            });
+
+            const data = await response.json();
+            const loadingEl = document.getElementById('loading-msg');
+            if (loadingEl) loadingEl.remove();
+
+            if (response.ok && data.reply) {
+                addChatMessage(data.reply);
+            } else {
+                addChatMessage('Erreur: ' + (data.reply || 'Réessaie plus tard'));
+            }
+        } catch (err) {
+            const loadingEl = document.getElementById('loading-msg');
+            if (loadingEl) loadingEl.remove();
+            addChatMessage('Erreur de connexion au serveur');
+        }
+    });
+
+    // ===== CHATBOT MODAL FLOTTANT =====
+    const chatbotToggleBtn = document.getElementById('chatbot-toggle-btn');
+    const chatbotModal = document.getElementById('chatbot-modal');
+    const chatbotCloseBtn = document.getElementById('chatbot-close-btn');
+
+    chatbotToggleBtn.addEventListener('click', () => {
+        chatbotModal.classList.toggle('hidden');
+        if (!chatbotModal.classList.contains('hidden')) {
+            chatInputWidget.focus();
+        }
+    });
+
+    chatbotCloseBtn.addEventListener('click', () => {
+        chatbotModal.classList.add('hidden');
+    });
+
+    // Fermer le modal quand on clique en dehors
+    document.addEventListener('click', (e) => {
+        if (!chatbotModal.contains(e.target) && !chatbotToggleBtn.contains(e.target)) {
+            // Optionnel: ne pas fermer au clic en dehors
+            // chatbotModal.classList.add('hidden');
+        }
+    });
+</script>
 
 <script>
     (() => {
