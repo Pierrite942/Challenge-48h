@@ -1,0 +1,360 @@
+{% extends "base.html" %}
+
+{% block title %}Accueil - Dashboard{% endblock %}
+
+{% block content %}
+<aside class="post-drawer" id="post-drawer" aria-hidden="true">
+    <div class="post-drawer-header">
+        <h3>Creer un post</h3>
+        <button type="button" class="close-drawer" id="close-drawer">Fermer</button>
+    </div>
+    <form class="feed-form" action="{{ url_for('add_post') }}" method="POST" enctype="multipart/form-data">
+        <textarea name="content" placeholder="Partage ce que tu veux..." maxlength="2000"></textarea>
+        <div class="media-inputs">
+            <label>
+                <span>Photo</span>
+                <input type="file" name="image" accept="image/*">
+            </label>
+        </div>
+        <button type="submit">Publier</button>
+    </form>
+</aside>
+<div class="drawer-overlay" id="drawer-overlay" hidden></div>
+
+<section class="dashboard-layout">
+    <aside class="dashboard-column left">
+        <article class="box box-news">
+            <h3>News Ynov</h3>
+            {% if user.is_admin %}
+            <form class="ynov-news-form" action="{{ url_for('add_news') }}" method="POST">
+                <input type="text" name="title" placeholder="Titre de la news" maxlength="120" required>
+                <textarea name="content" placeholder="Contenu de la news Ynov..." required></textarea>
+                <button type="submit">Publier la news</button>
+            </form>
+            {% endif %}
+
+            <div class="ynov-news-list">
+                {% if ynov_news_list %}
+                    {% for news_item in ynov_news_list %}
+                    <article class="ynov-news-item">
+                        <strong>{{ news_item.title }}</strong>
+                        <p>{{ news_item.content }}</p>
+                        <small>{{ news_item.created_at.strftime('%d/%m %H:%M') }}</small>
+                    </article>
+                    {% endfor %}
+                {% else %}
+                    <p class="news-empty">Aucune news Ynov pour le moment.</p>
+                {% endif %}
+            </div>
+        </article>
+    </aside>
+
+    <section class="dashboard-column middle">
+        <article class="box box-feed">
+            <p class="box-eyebrow">Feed Live</p>
+            <h1>Mur des utilisateurs</h1>
+            <p class="feed-subtitle"></p>
+
+            <div class="feed-list" id="feed-list" data-last-id="{{ posts[0].id if posts else 0 }}">
+                {% if posts %}
+                    {% for item in posts %}
+                    <article class="feed-item" data-id="{{ item.id }}">
+                        <div class="feed-meta">
+                            <strong>{{ item.author.username }}</strong>
+                            <small>{{ item.created_at.strftime('%d/%m %H:%M') }}</small>
+                        </div>
+                        {% if item.content %}
+                        <p>{{ item.content }}</p>
+                        {% endif %}
+                        {% if item.image_path %}
+                        <img src="{{ url_for('static', filename=item.image_path) }}" alt="Image partagee" loading="lazy">
+                        {% endif %}
+                        {% if item.video_path %}
+                        <video controls preload="metadata" src="{{ url_for('static', filename=item.video_path) }}"></video>
+                        {% endif %}
+
+                        <div class="post-actions">
+                            <form action="{{ url_for('toggle_post_like', post_id=item.id) }}" method="POST">
+                                <button type="submit" class="like-btn {% if item.likes | selectattr('user_id', 'equalto', user.id) | list %}active{% endif %}">
+                                    Like ({{ item.likes | length }})
+                                </button>
+                            </form>
+                            {% if user.is_admin %}
+                            <form action="{{ url_for('admin_delete_post', post_id=item.id) }}" method="POST" onsubmit="return confirm('Confirmer la suppression de ce post ?');">
+                                <button type="submit" class="admin-delete-btn">Supprimer le post</button>
+                            </form>
+                            {% endif %}
+                        </div>
+
+                        <div class="comment-list">
+                            {% for comment in item.comments %}
+                            <p>
+                                <strong>{{ comment.user.username }}</strong> {{ comment.content }}
+                                {% if user.is_admin %}
+                                <form class="inline-delete-form" action="{{ url_for('admin_delete_comment', comment_id=comment.id) }}" method="POST" onsubmit="return confirm('Confirmer la suppression de ce commentaire ?');">
+                                    <button type="submit" class="admin-delete-btn small">Supprimer</button>
+                                </form>
+                                {% endif %}
+                            </p>
+                            {% endfor %}
+                        </div>
+                        <form class="comment-form" action="{{ url_for('add_post_comment', post_id=item.id) }}" method="POST">
+                            <input type="text" name="comment" placeholder="Ecrire un commentaire..." maxlength="500" required>
+                            <button type="submit">Commenter</button>
+                        </form>
+                    </article>
+                    {% endfor %}
+                {% else %}
+                    <p class="news-empty" id="feed-empty">Aucun post pour le moment.</p>
+                {% endif %}
+            </div>
+        </article>
+    </section>
+
+    <aside class="dashboard-column right">
+        <article class="box box-create-post">
+            <h3>Publier</h3>
+            <p>Tu veux poster ?</p>
+            <button type="button" id="open-drawer" class="open-drawer-btn">Nouveau post</button>
+        </article>
+
+        <article class="box box-chatbot">
+            <h3>💬 Chat Bot</h3>
+            <div id="chat-container">
+                <div id="chat-messages-widget" class="chat-messages-widget">
+                    <div class="message bot-message">Bonjour ! Je suis l'assistant IA. Comment puis-je vous aider ?</div>
+                </div>
+                <div class="chat-input-area">
+                    <input type="text" id="chat-input-widget" placeholder="Écrivez votre message...">
+                    <button id="chat-send-btn-widget" class="chat-send-btn-widget">Envoyer</button>
+                </div>
+            </div>
+        </article>
+    </aside>
+</section>
+
+<script id="initial-posts-data" type="application/json">{{ serialized_posts | tojson }}</script>
+<script id="is-admin-data" type="application/json">{{ user.is_admin | tojson }}</script>
+
+<script>
+    // ===== CHATBOT WIDGET =====
+    const chatMessagesWidget = document.getElementById('chat-messages-widget');
+    const chatInputWidget = document.getElementById('chat-input-widget');
+    const chatSendBtn = document.getElementById('chat-send-btn-widget');
+
+    function addChatMessage(text, isUser = false) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `chat-message ${isUser ? 'user' : 'bot'}`;
+        messageDiv.textContent = text;
+        chatMessagesWidget.appendChild(messageDiv);
+        chatMessagesWidget.scrollTop = chatMessagesWidget.scrollHeight;
+    }
+
+    chatFormWidget.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const message = chatInputWidget.value.trim();
+        if (!message) return;
+
+        addChatMessage(message, true);
+        chatInputWidget.value = '';
+        chatInputWidget.focus();
+
+        const loadingMsg = document.createElement('div');
+        loadingMsg.className = 'chat-message bot loading';
+        loadingMsg.innerHTML = '<span class="loading-dots"><span>.</span><span>.</span><span>.</span></span>';
+        loadingMsg.id = 'loading-msg';
+        chatMessagesWidget.appendChild(loadingMsg);
+        chatMessagesWidget.scrollTop = chatMessagesWidget.scrollHeight;
+
+        try {
+            const response = await fetch('/api/ai/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: message })
+            });
+
+            const data = await response.json();
+            const loadingEl = document.getElementById('loading-msg');
+            if (loadingEl) loadingEl.remove();
+
+            if (response.ok && data.reply) {
+                addChatMessage(data.reply);
+            } else {
+                addChatMessage('Erreur: ' + (data.reply || 'Réessaie plus tard'));
+            }
+        } catch (err) {
+            const loadingEl = document.getElementById('loading-msg');
+            if (loadingEl) loadingEl.remove();
+            addChatMessage('Erreur de connexion au serveur');
+        }
+    });
+
+    // ===== CHATBOT MODAL FLOTTANT =====
+    const chatbotToggleBtn = document.getElementById('chatbot-toggle-btn');
+    const chatbotModal = document.getElementById('chatbot-modal');
+    const chatbotCloseBtn = document.getElementById('chatbot-close-btn');
+
+    chatbotToggleBtn.addEventListener('click', () => {
+        chatbotModal.classList.toggle('hidden');
+        if (!chatbotModal.classList.contains('hidden')) {
+            chatInputWidget.focus();
+        }
+    });
+
+    chatbotCloseBtn.addEventListener('click', () => {
+        chatbotModal.classList.add('hidden');
+    });
+
+    // Fermer le modal quand on clique en dehors
+    document.addEventListener('click', (e) => {
+        if (!chatbotModal.contains(e.target) && !chatbotToggleBtn.contains(e.target)) {
+            // Optionnel: ne pas fermer au clic en dehors
+            // chatbotModal.classList.add('hidden');
+        }
+    });
+</script>
+
+<script>
+    (() => {
+        const feedList = document.getElementById("feed-list");
+        if (!feedList) {
+            return;
+        }
+
+        const initialItemsNode = document.getElementById("initial-posts-data");
+        const isAdminNode = document.getElementById("is-admin-data");
+
+        const initialItems = initialItemsNode
+            ? JSON.parse(initialItemsNode.textContent || "[]")
+            : [];
+        const isAdmin = isAdminNode
+            ? JSON.parse(isAdminNode.textContent || "false")
+            : false;
+        let latestId = Number(feedList.dataset.lastId || 0);
+
+        const drawer = document.getElementById("post-drawer");
+        const overlay = document.getElementById("drawer-overlay");
+        const openDrawerBtn = document.getElementById("open-drawer");
+        const closeDrawerBtn = document.getElementById("close-drawer");
+
+        const openDrawer = () => {
+            if (!drawer || !overlay) {
+                return;
+            }
+            drawer.classList.add("open");
+            drawer.setAttribute("aria-hidden", "false");
+            overlay.hidden = false;
+        };
+
+        const closeDrawer = () => {
+            if (!drawer || !overlay) {
+                return;
+            }
+            drawer.classList.remove("open");
+            drawer.setAttribute("aria-hidden", "true");
+            overlay.hidden = true;
+        };
+
+        if (openDrawerBtn) {
+            openDrawerBtn.addEventListener("click", openDrawer);
+        }
+        if (closeDrawerBtn) {
+            closeDrawerBtn.addEventListener("click", closeDrawer);
+        }
+        if (overlay) {
+            overlay.addEventListener("click", closeDrawer);
+        }
+
+        const escapeHtml = (value) =>
+            String(value || "")
+                .replaceAll("&", "&amp;")
+                .replaceAll("<", "&lt;")
+                .replaceAll(">", "&gt;")
+                .replaceAll('"', "&quot;")
+                .replaceAll("'", "&#039;");
+
+        const buildMediaUrl = (path) => {
+            if (!path) {
+                return "";
+            }
+            return `${window.location.origin}/static/${path}`;
+        };
+
+        const renderItem = (item, prepend = false) => {
+            const emptyNode = document.getElementById("feed-empty");
+            if (emptyNode) {
+                emptyNode.remove();
+            }
+
+            const card = document.createElement("article");
+            card.className = "feed-item";
+            card.dataset.id = item.id;
+
+            const textPart = item.content ? `<p>${escapeHtml(item.content)}</p>` : "";
+            const imagePart = item.image_path
+                ? `<img src="${buildMediaUrl(item.image_path)}" alt="Image partagee" loading="lazy">`
+                : "";
+            const videoPart = item.video_path
+                ? `<video controls preload="metadata" src="${buildMediaUrl(item.video_path)}"></video>`
+                : "";
+
+            card.innerHTML = `
+                <div class="feed-meta">
+                    <strong>${escapeHtml(item.author)}</strong>
+                    <small>${escapeHtml(item.created_at)}</small>
+                </div>
+                ${textPart}
+                ${imagePart}
+                ${videoPart}
+                <div class="post-actions">
+                    <form action="/posts/${item.id}/like" method="POST">
+                        <button type="submit" class="like-btn">Like (${Number(item.likes_count || 0)})</button>
+                    </form>
+                    ${isAdmin ? `<form action="/admin/posts/${item.id}/delete" method="POST" onsubmit="return confirm('Confirmer la suppression de ce post ?');"><button type="submit" class="admin-delete-btn">Supprimer le post</button></form>` : ""}
+                </div>
+                <div class="comment-list"></div>
+                <form class="comment-form" action="/posts/${item.id}/comments" method="POST">
+                    <input type="text" name="comment" placeholder="Ecrire un commentaire..." maxlength="500" required>
+                    <button type="submit">Commenter</button>
+                </form>
+            `;
+
+            if (prepend) {
+                feedList.prepend(card);
+            } else {
+                feedList.append(card);
+            }
+        };
+
+        const pollFeed = async () => {
+            try {
+                const response = await fetch(`/api/feed?after_id=${latestId}`);
+                if (!response.ok) {
+                    return;
+                }
+
+                const payload = await response.json();
+                const items = payload.items || [];
+                if (!items.length) {
+                    return;
+                }
+
+                items.sort((a, b) => b.id - a.id);
+                for (const item of items) {
+                    renderItem(item, true);
+                    if (item.id > latestId) {
+                        latestId = item.id;
+                    }
+                }
+            } catch (_error) {
+            }
+        };
+
+        if (initialItems.length && !latestId) {
+            latestId = Math.max(...initialItems.map((item) => Number(item.id || 0)));
+        }
+
+        setInterval(pollFeed, 2000);
+    })();
+</script>
+{% endblock %}
