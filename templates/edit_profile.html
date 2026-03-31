@@ -30,7 +30,6 @@
             <div class="form-group">
                 <label for="bio">Biographie</label>
                 <textarea id="bio" name="bio" rows="4" class="form-textarea" placeholder="Parlez-nous de vous...">{{ user.bio or '' }}</textarea>
-                <small class="form-help">Décrivez-vous en quelques lignes</small>
             </div>
 
             <!-- Age -->
@@ -48,18 +47,13 @@
             <!-- Année de formation -->
             <div class="form-group">
                 <label for="training_year">Année de formation</label>
-<<<<<<< HEAD
                 <input type="text" id="training_year" name="training_year" class="form-input" placeholder="Ex: B1, B2" value="{{ user.training_year or '' }}">
-=======
-                <input type="text" id="training_year" name="training_year" class="form-input" placeholder="Ex: B1,B2" value="{{ user.training_year or '' }}">
->>>>>>> 75c23c1611bd9dac18b88bdf2152d3cd8773bde7
             </div>
 
             <!-- Compétences -->
             <div class="form-group">
                 <label for="skills">Compétences techniques</label>
                 <textarea id="skills" name="skills" rows="6" class="form-textarea" placeholder="Listez vos compétences techniques (une par ligne ou séparées par des virgules)">{{ user.skills or '' }}</textarea>
-                <small class="form-help">Vous pouvez les écrire une par ligne ou séparées par des virgules</small>
             </div>
 
             <!-- Boutons d'action -->
