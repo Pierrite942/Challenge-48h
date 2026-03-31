@@ -121,16 +121,61 @@ def ensure_legacy_schema_updates() -> None:
     inspector = inspect(db.engine)
 
     user_columns = [column["name"] for column in inspector.get_columns("user")]
+    
+    # Add all missing user columns BEFORE querying the table
     if "is_admin" not in user_columns:
         db.session.execute(
             text('ALTER TABLE "user" ADD COLUMN is_admin BOOLEAN NOT NULL DEFAULT 0')
         )
         db.session.commit()
+        user_columns.append("is_admin")
 
     if "email" not in user_columns:
         db.session.execute(text('ALTER TABLE "user" ADD COLUMN email VARCHAR(255)'))
         db.session.commit()
+        user_columns.append("email")
 
+    if "profile_picture" not in user_columns:
+        db.session.execute(text('ALTER TABLE "user" ADD COLUMN profile_picture VARCHAR(255)'))
+        db.session.commit()
+        user_columns.append("profile_picture")
+
+    if "bio" not in user_columns:
+        db.session.execute(text('ALTER TABLE "user" ADD COLUMN bio TEXT'))
+        db.session.commit()
+        user_columns.append("bio")
+
+    if "age" not in user_columns:
+        db.session.execute(text('ALTER TABLE "user" ADD COLUMN age INTEGER'))
+        db.session.commit()
+        user_columns.append("age")
+
+    if "training_year" not in user_columns:
+        db.session.execute(text('ALTER TABLE "user" ADD COLUMN training_year VARCHAR(50)'))
+        db.session.commit()
+        user_columns.append("training_year")
+    else:
+        # Update existing integer column to varchar if needed
+        try:
+            db.session.execute(text('ALTER TABLE "user" RENAME COLUMN training_year TO training_year_old'))
+            db.session.execute(text('ALTER TABLE "user" ADD COLUMN training_year VARCHAR(50)'))
+            db.session.execute(text('UPDATE "user" SET training_year = CAST(training_year_old AS TEXT) WHERE training_year_old IS NOT NULL'))
+            db.session.execute(text('ALTER TABLE "user" DROP COLUMN training_year_old'))
+            db.session.commit()
+        except:
+            pass
+
+    if "specialization" not in user_columns:
+        db.session.execute(text('ALTER TABLE "user" ADD COLUMN specialization VARCHAR(255)'))
+        db.session.commit()
+        user_columns.append("specialization")
+
+    if "skills" not in user_columns:
+        db.session.execute(text('ALTER TABLE "user" ADD COLUMN skills TEXT'))
+        db.session.commit()
+        user_columns.append("skills")
+
+    # NOW safe to query the User table
     existing_users = db.session.query(User).all()
     used_emails = {
         (existing_user.email or "").strip().lower()
@@ -164,6 +209,30 @@ def ensure_legacy_schema_updates() -> None:
 
     if "video_path" not in post_columns:
         db.session.execute(text('ALTER TABLE "post" ADD COLUMN video_path VARCHAR(255)'))
+        db.session.commit()
+
+    if "profile_picture" not in user_columns:
+        db.session.execute(text('ALTER TABLE "user" ADD COLUMN profile_picture VARCHAR(255)'))
+        db.session.commit()
+
+    if "bio" not in user_columns:
+        db.session.execute(text('ALTER TABLE "user" ADD COLUMN bio TEXT'))
+        db.session.commit()
+
+    if "age" not in user_columns:
+        db.session.execute(text('ALTER TABLE "user" ADD COLUMN age INTEGER'))
+        db.session.commit()
+
+    if "training_year" not in user_columns:
+        db.session.execute(text('ALTER TABLE "user" ADD COLUMN training_year INTEGER'))
+        db.session.commit()
+
+    if "specialization" not in user_columns:
+        db.session.execute(text('ALTER TABLE "user" ADD COLUMN specialization VARCHAR(255)'))
+        db.session.commit()
+
+    if "skills" not in user_columns:
+        db.session.execute(text('ALTER TABLE "user" ADD COLUMN skills TEXT'))
         db.session.commit()
 
 
@@ -535,6 +604,58 @@ def feed_updates():
         .all()
     )
     return jsonify({"items": [_post_to_dict(item, current_user.id) for item in new_items]})
+
+
+@app.route("/profile/edit", methods=["GET", "POST"])
+def edit_profile():
+    current_user = _get_current_user()
+    if current_user is None:
+        return redirect(url_for("login"))
+
+    if request.method == "POST":
+        bio = (request.form.get("bio") or "").strip()
+        age_raw = (request.form.get("age") or "").strip()
+        training_year_raw = (request.form.get("training_year") or "").strip()
+        specialization = (request.form.get("specialization") or "").strip()
+        skills = (request.form.get("skills") or "").strip()
+        profile_picture_file = request.files.get("profile_picture")
+
+        age = None
+        if age_raw:
+            try:
+                age = int(age_raw)
+                if age < 1 or age > 150:
+                    flash("L'âge doit être entre 1 et 150.")
+                    return render_template("edit_profile.html", user=current_user)
+            except ValueError:
+                flash("L'âge doit être un nombre.")
+                return render_template("edit_profile.html", user=current_user)
+
+        training_year = training_year_raw if training_year_raw else None
+
+        profile_picture_path = None
+        if profile_picture_file and profile_picture_file.filename:
+            profile_picture_path = _save_media_file(profile_picture_file, ALLOWED_IMAGE_EXTENSIONS, "profile_pictures")
+            if not profile_picture_path:
+                flash("Format d'image non supporté pour la photo de profil.")
+                return render_template("edit_profile.html", user=current_user)
+            
+            if current_user.profile_picture:
+                _delete_media_if_exists(current_user.profile_picture)
+
+        current_user.bio = bio
+        current_user.age = age
+        current_user.training_year = training_year
+        current_user.specialization = specialization
+        current_user.skills = skills
+        if profile_picture_path:
+            current_user.profile_picture = profile_picture_path
+
+        db.session.commit()
+        flash("Profil mis à jour avec succès.")
+        return redirect(url_for("profile"))
+
+    return render_template("edit_profile.html", user=current_user)
 
 
 if __name__ == "__main__":

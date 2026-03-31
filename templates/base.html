@@ -26,7 +26,11 @@
                 <a href="{{ url_for('messages') }}" class="header-btn">Messages</a>
                 <a href="{{ url_for('logout') }}" class="header-btn primary">Déconnexion</a>
                 <a href="{{ url_for('profile') }}" class="profile-link" aria-label="Voir le profil">
-                    <span class="profile-avatar">{{ user.username[0] | upper if user.username else "U" }}</span>
+                    {% if user.profile_picture %}
+                        <img src="{{ url_for('static', filename=user.profile_picture) }}" alt="Photo de profil" class="profile-avatar-img">
+                    {% else %}
+                        <span class="profile-avatar">{{ user.username[0] | upper if user.username else "U" }}</span>
+                    {% endif %}
                     <span class="profile-name">{{ user.username }}</span>
                 </a>
                 {% else %}

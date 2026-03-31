@@ -83,6 +83,14 @@ a {
     border: 1px solid rgba(255, 255, 255, 0.35);
 }
 
+.profile-avatar-img {
+    width: 34px;
+    height: 34px;
+    border-radius: 999px;
+    object-fit: cover;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+}
+
 .profile-name {
     font-size: 0.86rem;
     font-weight: 700;

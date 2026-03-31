@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block title %}Éditer Profil - {{ user.username }}{% endblock %}
+
+{% block content %}
+<section class="edit-profile-page">
+    <article class="box edit-profile-card">
+        <h1>Éditer votre profil</h1>
+        
+        <form method="POST" enctype="multipart/form-data" class="edit-profile-form">
+            <!-- Photo de profil -->
+            <div class="form-group">
+                <label for="profile_picture">Photo de profil</label>
+                <div class="profile-picture-section">
+                    <div class="current-profile-picture">
+                        {% if user.profile_picture %}
+                            <img src="{{ url_for('static', filename=user.profile_picture) }}" alt="Photo de profil" class="profile-img">
+                        {% else %}
+                            <div class="profile-placeholder">
+                                <span class="placeholder-avatar">{{ user.username[0] | upper if user.username else "U" }}</span>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <input type="file" id="profile_picture" name="profile_picture" accept="image/*" class="file-input">
+                    <small class="form-help">Formats acceptés: PNG, JPG, JPEG, GIF, WEBP (max 30MB)</small>
+                </div>
+            </div>
+
+            <!-- Bio -->
+            <div class="form-group">
+                <label for="bio">Biographie</label>
+                <textarea id="bio" name="bio" rows="4" class="form-textarea" placeholder="Parlez-nous de vous...">{{ user.bio or '' }}</textarea>
+                <small class="form-help">Décrivez-vous en quelques lignes</small>
+            </div>
+
+            <!-- Age -->
+            <div class="form-group">
+                <label for="age">Âge</label>
+                <input type="number" id="age" name="age" min="1" max="150" class="form-input" placeholder="Votre âge" value="{{ user.age or '' }}">
+            </div>
+
+            <!-- Filière -->
+            <div class="form-group">
+                <label for="specialization">Filière</label>
+                <input type="text" id="specialization" name="specialization" class="form-input" placeholder="Ex: Informatique, Web, Cybersécurité..." value="{{ user.specialization or '' }}">
+            </div>
+
+            <!-- Année de formation -->
+            <div class="form-group">
+                <label for="training_year">Année de formation</label>
+                <input type="text" id="training_year" name="training_year" class="form-input" placeholder="Ex: B1,B2" value="{{ user.training_year or '' }}">
+            </div>
+
+            <!-- Compétences -->
+            <div class="form-group">
+                <label for="skills">Compétences techniques</label>
+                <textarea id="skills" name="skills" rows="6" class="form-textarea" placeholder="Listez vos compétences techniques (une par ligne ou séparées par des virgules)">{{ user.skills or '' }}</textarea>
+                <small class="form-help">Vous pouvez les écrire une par ligne ou séparées par des virgules</small>
+            </div>
+
+            <!-- Boutons d'action -->
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Enregistrer les modifications</button>
+                <a href="{{ url_for('profile') }}" class="btn btn-secondary">Annuler</a>
+            </div>
+        </form>
+    </article>
+</section>
+{% endblock %}

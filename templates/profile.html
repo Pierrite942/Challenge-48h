@@ -4,27 +4,133 @@
 
 {% block content %}
 <section class="profile-page">
-    <article class="box profile-card">
-        <div class="profile-header">
-            <span class="profile-avatar big">{{ user.username[0] | upper if user.username else "U" }}</span>
-            <div>
+    <!-- Header de couverture -->
+    <div class="profile-header-bg"></div>
+
+    <!-- Carte de profil principale -->
+    <article class="profile-card-main">
+        <div class="profile-header-section">
+            <div class="profile-avatar-wrapper">
+                {% if user.profile_picture %}
+                    <img src="{{ url_for('static', filename=user.profile_picture) }}" alt="Photo de profil" class="profile-avatar-img">
+                {% else %}
+                    <div class="profile-avatar">{{ user.username[0] | upper if user.username else "U" }}</div>
+                {% endif %}
+            </div>
+            <div class="profile-info-header">
                 <h1>{{ user.username }}</h1>
-                <p>Membre depuis le {{ user.created_at.strftime('%d/%m/%Y') }}</p>
+                <p class="member-since">📅 Membre depuis {{ user.created_at.strftime('%d %B %Y') }}</p>
+                <div class="profile-role {{ 'role-admin' if user.is_admin else 'role-student' }}">
+                    {% if user.is_admin %}
+                        👑 Administrateur
+                    {% else %}
+                        🎓 Étudiant
+                    {% endif %}
+                </div>
+                <a href="{{ url_for('edit_profile') }}" class="btn-edit-profile">✏️ Éditer le profil</a>
             </div>
         </div>
 
-        <div class="profile-grid">
-            <div>
-                <h3>Compte</h3>
-                <p><strong>Nom d'utilisateur :</strong> {{ user.username }}</p>
-                <p><strong>Email :</strong> {{ user.email }}</p>
-                <p><strong>Rôle :</strong> {{ 'Administrateur' if user.is_admin else 'Etudiant' }}</p>
+        <!-- Biographie -->
+        {% if user.bio %}
+        <div class="profile-section bio-section">
+            <div class="section-content">
+                <p class="bio-text">{{ user.bio }}</p>
             </div>
-            <div>
-                <h3>Activité</h3>
-                <p><strong>Posts :</strong> {{ user.posts | length }}</p>
-                <p><strong>Commentaires :</strong> {{ user.post_comments | length }}</p>
-                <p><strong>Likes :</strong> {{ user.post_likes | length }}</p>
+        </div>
+        {% endif %}
+
+        <!-- Informations académiques et personnelles -->
+        {% if user.age or user.specialization or user.training_year %}
+        <div class="profile-section info-section">
+            <h2 class="section-title">📚 Informations académiques</h2>
+            <div class="info-grid">
+                {% if user.training_year %}
+                <div class="info-card">
+                    <div class="info-icon"></div>
+                    <div class="info-content">
+                        <p class="info-label">Année</p>
+                        <p class="info-value">{{ user.training_year }}</p>
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if user.specialization %}
+                <div class="info-card">
+                    <div class="info-icon"></div>
+                    <div class="info-content">
+                        <p class="info-label">Filière</p>
+                        <p class="info-value">{{ user.specialization }}</p>
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if user.age %}
+                <div class="info-card">
+                    <div class="info-icon"></div>
+                    <div class="info-content">
+                        <p class="info-label">Âge</p>
+                        <p class="info-value">{{ user.age }} ans</p>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Compétences techniques -->
+        {% if user.skills %}
+        <div class="profile-section skills-section">
+            <h2 class="section-title">🛠️ Compétences techniques</h2>
+            <div class="skills-list">
+                {% set skill_list = user.skills.split('\n') if '\n' in user.skills else user.skills.split(',') %}
+                {% for skill in skill_list %}
+                    {% set trimmed_skill = skill.strip() %}
+                    {% if trimmed_skill %}
+                    <span class="skill-tag">{{ trimmed_skill }}</span>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Statistiques d'activité -->
+        <div class="profile-section stats-section">
+            <h2 class="section-title">📊 Activité</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number">{{ user.posts | length }}</div>
+                    <div class="stat-label">Posts</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">{{ user.post_comments | length }}</div>
+                    <div class="stat-label">Commentaires</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">{{ user.post_likes | length }}</div>
+                    <div class="stat-label">Likes</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Informations de compte -->
+        <div class="profile-section account-section">
+            <h2 class="section-title">👤 Informations de compte</h2>
+            <div class="account-info">
+                <div class="account-item">
+                    <span class="account-label">📧 Email</span>
+                    <span class="account-value">{{ user.email }}</span>
+                </div>
+                <div class="account-item">
+                    <span class="account-label">🔐 Identifiant</span>
+                    <span class="account-value">{{ user.username }}</span>
+                </div>
+                <div class="account-item">
+                    <span class="account-label">📝 Statut</span>
+                    <span class="account-value {{ 'text-admin' if user.is_admin else 'text-student' }}">
+                        {% if user.is_admin %}Administrateur{% else %}Étudiant{% endif %}
+                    </span>
+                </div>
             </div>
         </div>
     </article>

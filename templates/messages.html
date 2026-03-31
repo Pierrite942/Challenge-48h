@@ -23,7 +23,11 @@
                     href="{{ url_for('messages', with_user=target.id, q=search_query) }}"
                     class="messages-user-item {% if selected_user and selected_user.id == target.id %}active{% endif %}"
                 >
-                    <span class="profile-avatar small">{{ target.username[0] | upper if target.username else "U" }}</span>
+                    {% if target.profile_picture %}
+                        <img src="{{ url_for('static', filename=target.profile_picture) }}" alt="{{ target.username }}" class="messages-user-avatar">
+                    {% else %}
+                        <span class="messages-user-avatar-placeholder">{{ target.username[0] | upper if target.username else "U" }}</span>
+                    {% endif %}
                     <span>{{ target.username }}</span>
                 </a>
                 {% endfor %}
@@ -36,7 +40,12 @@
     <section class="box messages-thread">
         {% if selected_user %}
             <div class="messages-thread-header">
-                <h3>Conversation avec {{ selected_user.username }}</h3>
+                {% if selected_user.profile_picture %}
+                    <img src="{{ url_for('static', filename=selected_user.profile_picture) }}" alt="{{ selected_user.username }}" class="messages-header-avatar">
+                {% else %}
+                    <div class="messages-header-avatar-placeholder">{{ selected_user.username[0] | upper if selected_user.username else "U" }}</div>
+                {% endif %}
+                <h3>{{ selected_user.username }}</h3>
             </div>
 
             <div class="messages-list">
