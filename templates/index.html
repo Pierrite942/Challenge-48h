@@ -40,6 +40,11 @@
                         <strong>{{ news_item.title }}</strong>
                         <p>{{ news_item.content }}</p>
                         <small>{{ news_item.created_at.strftime('%d/%m %H:%M') }}</small>
+                        {% if user.is_admin %}
+                        <form class="inline-delete-form" action="{{ url_for('admin_delete_news', news_id=news_item.id) }}" method="POST" onsubmit="return confirm('Confirmer la suppression de cette news ?');">
+                            <button type="submit" class="admin-delete-btn small">Supprimer</button>
+                        </form>
+                        {% endif %}
                     </article>
                     {% endfor %}
                 {% else %}

@@ -586,6 +586,29 @@ def admin_delete_comment(comment_id: int):
     return redirect(url_for("index"))
 
 
+@app.route("/admin/news/<int:news_id>/delete", methods=["POST"])
+def admin_delete_news(news_id: int):
+    current_user = _get_current_user()
+    if current_user is None:
+        return redirect(url_for("login"))
+
+    if not current_user.is_admin:
+        flash("Action reservee aux admins.")
+        return redirect(url_for("index"))
+
+    news_item = db.session.get(News, news_id)
+    if news_item is None:
+        flash("News introuvable.")
+        return redirect(url_for("index"))
+
+    _delete_media_if_exists(news_item.image_path)
+    _delete_media_if_exists(news_item.video_path)
+    db.session.delete(news_item)
+    db.session.commit()
+    flash("News supprimee.")
+    return redirect(url_for("index"))
+
+
 @app.route("/api/feed")
 def feed_updates():
     current_user = _get_current_user()
