@@ -3,78 +3,74 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>À propos - Yhearts</title>
+    <title>Messages - Ynook</title>
     <link rel="stylesheet" href="../style.css">
     <link rel="stylesheet" href="../css/message.css">
 </head>
 <body>
-    <!-- HEADER -->
     <header>
         <div class="header-container">
-            <!-- Logo à gauche -->
             <div class="logo">
-                <img src="../image/h__6_-removebg-preview.png" alt="Logo du site">
+                <a href="/">
+                    <img src="../image/h__6_-removebg-preview.png" alt="Logo du site">
+                </a>
             </div>
 
             <div class="search-bar">
-                <input type="text" placeholder="Rechercher...">
+                <input type="text" id="friendSearchInput" placeholder="Rechercher une personne...">
+                <div id="friendSearchResults" class="friend-search-results"></div>
             </div>
             
-            <div class="header-actions">
-                <a href="login.html" class="btn-inscription">Se connecter</a>
+            <div class="header-actions" id="headerActions">
+                <a href="/inscription" class="btn-inscription">S'inscrire</a>
             </div>
 
-            <!-- Menu à droite -->
             <div class="menu-section">
                 <button class="menu-btn" id="menuBtn">☰ Menu</button>
                 <div class="dropdown-menu" id="menuDropdown">
-                    <a href="../index.html">Accueil</a>
-                    <a href="login.html">Connexion</a>
-                    <a href="services.html">Services</a>
-                    <a href="message.html">Message</a>
-                    <a href="contact.html">Contact</a>
+                    <a href="/">Accueil</a>
+                    <a href="/login">Connexion</a>
+                    <a href="/services">Services</a>
+                    <a href="/message">Message</a>
+                    <a href="/contact">Contact</a>
                 </div>
             </div>
         </div>
     </header>
 
-    <!-- MAIN CONTENT -->
-    <main>
-        <section class="hero">
-            <h1>À propos de nous</h1>
-            <p>En savoir plus sur notre histoire et nos valeurs</p>
-        </section>
+    <main class="message-page-main">
+        <section class="wa-layout">
+            <aside class="wa-sidebar">
+                <div class="wa-sidebar-title">Discussions</div>
 
-        <section class="section-1">
-            <h2>Notre histoire</h2>
-            <p>Découvrez notre parcours</p>
-        </section>
+                <div id="notificationsBox" class="notifications-box">
+                    <h3>Notifications</h3>
+                    <div id="notificationsList" class="notifications-list">Chargement...</div>
+                </div>
 
-        <section class="section-2">
-            <h2>Notre mission</h2>
-            <p>Nos valeurs et nos objectifs</p>
-        </section>
+                <div id="friendRequestsBox" class="wa-block">
+                    <h3>Demandes recues</h3>
+                    <div id="friendRequestsList" class="wa-scroll-list">Aucune demande pour le moment.</div>
+                </div>
 
-        <section class="section-3">
-            <h2>Notre équipe</h2>
-            <p>Rencontrez l'équipe</p>
+                <div id="friendsBox" class="wa-block">
+                    <h3>Mes amis</h3>
+                    <div id="friendsList" class="wa-scroll-list">Aucun ami pour le moment.</div>
+                </div>
+            </aside>
+
+            <section id="messagePanel" class="wa-chat-panel">
+                <div class="wa-chat-header" id="messagePanelTitle">Messagerie</div>
+                <div id="conversationMessages" class="conversation-messages">
+                    <div class="conversation-placeholder">Selectionnez un ami pour discuter.</div>
+                </div>
+                <div class="conversation-input-row">
+                    <input type="text" id="conversationInput" placeholder="Ecrire un message..." disabled>
+                    <button id="conversationSendBtn" disabled>Envoyer</button>
+                </div>
+            </section>
         </section>
     </main>
-
-    <script>
-        const menuBtn = document.getElementById('menuBtn');
-        const menuDropdown = document.getElementById('menuDropdown');
-
-        menuBtn.addEventListener('click', function(e) {
-            e.stopPropagation();
-            menuDropdown.classList.toggle('show');
-        });
-
-        document.addEventListener('click', function(e) {
-            if (!menuBtn.contains(e.target) && !menuDropdown.contains(e.target)) {
-                menuDropdown.classList.remove('show');
-            }
-        });
-    </script>
+    <script src="../script.js"></script>
 </body>
 </html>

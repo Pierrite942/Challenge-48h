@@ -11,7 +11,7 @@
     <header>
         <div class="header-container">
             <div class="logo">
-                <a href="../index.html">
+                <a href="/">
                     <img src="../image/h__6_-removebg-preview.png" alt="Logo">
                 </a>
             </div>
@@ -21,17 +21,17 @@
             </div>
             
             <div class="header-actions">
-                <a href="login.html" class="btn-inscription" style="background: transparent; color: #fff; box-shadow: none; border: 2px solid #33e1cf;">Se connecter</a>
+                <a href="/login" class="btn-inscription" style="background: transparent; color: #fff; box-shadow: none; border: 2px solid #33e1cf;">Se connecter</a>
             </div>
 
             <div class="menu-section">
                 <button class="menu-btn" id="menuBtn">☰ Menu</button>
                 <div class="dropdown-menu" id="menuDropdown">
-                    <a href="../index.html">Accueil</a>
-                    <a href="login.html">Connexion</a>
-                    <a href="services.html">Services</a>
-                    <a href="message.html">Message</a>
-                    <a href="contact.html">Contact</a>
+                    <a href="/">Accueil</a>
+                    <a href="/login">Connexion</a>
+                    <a href="/services">Services</a>
+                    <a href="/message">Message</a>
+                    <a href="/contact">Contact</a>
                 </div>
             </div>
         </div>
@@ -40,7 +40,7 @@
     <main class="auth-page-main">
         <div class="auth-container">
             <h1>Créer un compte</h1>
-            <form action="#" method="POST">
+            <form id="registerForm" action="#" method="POST">
                 <div class="form-group">
                     <label for="prenom">Prénom</label>
                     <input type="text" id="prenom" name="prenom" required placeholder="Votre prénom">
@@ -61,10 +61,11 @@
                     <label for="confirm-password">Confirmer le mot de passe</label>
                     <input type="password" id="confirm-password" name="confirm-password" required placeholder="••••••••">
                 </div>
+                <p id="registerMessage" style="margin-bottom: 1rem; font-size: 0.95rem;"></p>
                 <button type="submit" class="btn-submit">M'inscrire</button>
             </form>
             <div class="auth-links">
-                <p>Déjà un compte ? <a href="login.html">Se connecter ici</a></p>
+                <p>Déjà un compte ? <a href="/login">Se connecter ici</a></p>
             </div>
         </div>
     </main>
@@ -82,6 +83,66 @@
         document.addEventListener('click', function(e) {
             if (!menuBtn.contains(e.target) && !menuDropdown.contains(e.target)) {
                 menuDropdown.classList.remove('show');
+            }
+        });
+
+        // Script inscription MySQL
+        const registerForm = document.getElementById('registerForm');
+        const registerMessage = document.getElementById('registerMessage');
+        const apiBase = window.location.origin && window.location.origin.startsWith('http')
+            ? window.location.origin
+            : 'http://127.0.0.1:5000';
+
+        if (!window.location.origin || !window.location.origin.startsWith('http')) {
+            window.location.href = 'http://127.0.0.1:5000/inscription';
+        }
+
+        registerForm.addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const prenom = document.getElementById('prenom').value.trim();
+            const nom = document.getElementById('nom').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+
+            if (password !== confirmPassword) {
+                registerMessage.style.color = '#ec4363';
+                registerMessage.textContent = 'Les mots de passe ne correspondent pas.';
+                return;
+            }
+
+            registerMessage.style.color = '#666';
+            registerMessage.textContent = 'Inscription en cours...';
+
+            try {
+                const response = await fetch(`${apiBase}/api/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        prenom: prenom,
+                        nom: nom,
+                        email: email,
+                        password: password,
+                        confirm_password: confirmPassword
+                    })
+                });
+
+                const data = await response.json();
+                if (response.ok) {
+                    registerMessage.style.color = '#14a44d';
+                    registerMessage.textContent = data.message || 'Inscription reussie.';
+                    registerForm.reset();
+                    setTimeout(() => {
+                        window.location.href = '/login';
+                    }, 1200);
+                } else {
+                    registerMessage.style.color = '#ec4363';
+                    registerMessage.textContent = data.error || 'Erreur lors de l\'inscription.';
+                }
+            } catch (err) {
+                registerMessage.style.color = '#ec4363';
+                registerMessage.textContent = 'Serveur indisponible. Lancez app.py.';
             }
         });
     </script>

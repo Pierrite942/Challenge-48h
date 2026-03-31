@@ -17,18 +17,18 @@
                 <input type="text" placeholder="Rechercher...">
             </div>
 
-            <div class="header-actions">
-                <a href="html/inscription.html" class="btn-inscription">S'inscrire</a>
+            <div class="header-actions" id="headerActions">
+                <a href="/inscription" class="btn-inscription" id="authActionLink">S'inscrire</a>
             </div>
 
             <div class="menu-section">
                 <button class="menu-btn" id="menuBtn">☰ Menu</button>
                 <div class="dropdown-menu" id="menuDropdown">
-                    <a href="index.html">Accueil</a>
-                    <a href="html/login.html">Connexion</a>
-                    <a href="html/services.html">Services</a>
-                    <a href="html/message.html">Message</a>
-                    <a href="html/contact.html">Contact</a>
+                    <a href="/">Accueil</a>
+                    <a href="/login">Connexion</a>
+                    <a href="/services">Services</a>
+                    <a href="/message">Message</a>
+                    <a href="/contact">Contact</a>
                 </div>
             </div>
         </div>
@@ -68,6 +68,12 @@
 
             <section class="section-message">
                 <h2>Message</h2>
+                <div id="notificationsBox" class="notifications-box">
+                    <h3>Notifications</h3>
+                    <div id="notificationsList" class="notifications-list">Connectez-vous pour voir vos notifications.</div>
+                </div>
+                <p style="color:#ddd;">La messagerie complete est disponible sur la page Message.</p>
+                <a href="/message" class="btn-inscription" style="margin-top:10px; display:inline-block;">Ouvrir Message</a>
             </section>
         </div>
     </main>
