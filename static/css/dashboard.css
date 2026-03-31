@@ -290,9 +290,9 @@
     background: linear-gradient(135deg, #FF69B4 0%, #FF1493 100%);
     color: white;
     border: none;
-    flex: 1;
     display: flex;
     flex-direction: column;
+    max-height: 50vh;
 }
 
 .box-create-post h3 {
@@ -302,6 +302,53 @@
 
 .box-create-post p {
     color: rgba(255, 255, 255, 0.95);
+}
+
+/* YMatch Box */
+.box-ymatch {
+    background: linear-gradient(135deg, #2C3E50 0%, #34495E 100%);
+    color: white;
+    border: none;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.box-ymatch h3 {
+    color: white;
+    font-weight: 900;
+    margin: 0 0 8px;
+}
+
+.box-ymatch p {
+    color: rgba(255, 255, 255, 0.9);
+    margin: 0 0 16px;
+    flex: 1;
+    display: flex;
+    align-items: center;
+}
+
+.ymatch-btn {
+    display: inline-block;
+    padding: 12px 20px;
+    background: rgba(255, 255, 255, 0.25);
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 800;
+    text-transform: uppercase;
+    text-align: center;
+    transition: all 0.2s;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    width: 100%;
+    font-size: 0.85rem;
+    box-sizing: border-box;
+}
+
+.ymatch-btn:hover {
+    background: rgba(255, 255, 255, 0.4);
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: translateY(-2px);
 }
 
 .open-drawer-btn {
