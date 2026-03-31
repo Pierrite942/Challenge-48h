@@ -198,6 +198,9 @@ main {
 .section-dashboard { background-color: #f5f5f5; border-radius: 8px; padding: 2rem; border: 2px solid #ccc; }
 .section-news { background-color: #33e1cf; height: 200px; border-radius: 8px; padding: 1.5rem; }
 .section-message { background-color: #2d2d33; height: 350px; border-radius: 8px; padding: 1.5rem; border: 2px solid #ccc; }
+.section-ymatch { background-color: #2d2d33; height: 250px; border-radius: 8px; padding: 1.5rem; border: 2px solid #ccc; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.btn-ymatch-link { display: inline-block; background-color: #33e1cf; color: #000; padding: 0.75rem 1.5rem; border-radius: 5px; text-decoration: none; font-weight: bold; margin-top: 1rem; transition: background-color 0.3s; }
+.btn-ymatch-link:hover { background-color: #2bc5b8; }
 
 /* Responsive */
 @media (max-width: 1024px) {
