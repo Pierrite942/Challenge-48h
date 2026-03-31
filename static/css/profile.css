@@ -1,0 +1,559 @@
+.profile-page {
+    display: grid;
+    gap: 0;
+    position: relative;
+}
+
+/* Header de couverture */
+.profile-header-bg {
+    width: 100%;
+    height: 280px;
+    background: linear-gradient(135deg, #0066cc 0%, #0052a3 50%, #003d7a 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+.profile-header-bg::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        radial-gradient(circle at 20% 50%, rgba(255,255,255,0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(0,0,0,0.1) 0%, transparent 50%);
+    pointer-events: none;
+}
+
+/* Carte de profil principale */
+.profile-card-main {
+    max-width: 900px;
+    width: 100%;
+    margin: -100px auto 0;
+    padding: 40px;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+    position: relative;
+    z-index: 10;
+}
+
+/* Section header du profil */
+.profile-header-section {
+    display: flex;
+    gap: 30px;
+    margin-bottom: 40px;
+    padding-bottom: 30px;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+.profile-avatar-wrapper {
+    flex-shrink: 0;
+}
+
+.profile-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #0066cc, #0052a3);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    font-weight: bold;
+    box-shadow: 0 10px 30px rgba(0, 102, 204, 0.3);
+    flex-shrink: 0;
+}
+
+.profile-avatar-img {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    box-shadow: 0 10px 30px rgba(0, 102, 204, 0.3);
+    border: 4px solid white;
+}
+
+.profile-info-header {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 12px;
+}
+
+.profile-info-header h1 {
+    margin: 0;
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #1a1a1a;
+    font-family: "Barlow Condensed", sans-serif;
+}
+
+.member-since {
+    margin: 0;
+    color: #666;
+    font-size: 1rem;
+}
+
+.profile-role {
+    display: inline-block;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    width: fit-content;
+}
+
+.role-admin {
+    background: linear-gradient(135deg, #ffd700, #ffb700);
+    color: #333;
+}
+
+.role-student {
+    background: linear-gradient(135deg, #4CAF50, #45a049);
+    color: white;
+}
+
+.btn-edit-profile {
+    display: inline-block;
+    padding: 12px 24px;
+    background: linear-gradient(135deg, #0066cc, #0052a3);
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 102, 204, 0.3);
+    width: fit-content;
+}
+
+.btn-edit-profile:hover {
+    background: linear-gradient(135deg, #0052a3, #003d7a);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 102, 204, 0.4);
+}
+
+/* Sections de profil */
+.profile-section {
+    margin-bottom: 30px;
+    padding: 30px;
+    background: #f9f9f9;
+    border-radius: 12px;
+    border-left: 4px solid #0066cc;
+}
+
+.bio-section {
+    border-left-color: #4CAF50;
+}
+
+.info-section {
+    border-left-color: #2196F3;
+}
+
+.skills-section {
+    border-left-color: #FF9800;
+}
+
+.stats-section {
+    border-left-color: #9C27B0;
+}
+
+.account-section {
+    border-left-color: #F44336;
+}
+
+.section-title {
+    margin: 0 0 20px 0;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #1a1a1a;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Bio section */
+.bio-text {
+    margin: 0;
+    font-size: 1.05rem;
+    line-height: 1.8;
+    color: #333;
+    font-style: italic;
+}
+
+/* Info cards pour les infos académiques */
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 20px;
+}
+
+.info-card {
+    display: flex;
+    gap: 15px;
+    padding: 20px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+}
+
+.info-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.info-icon {
+    font-size: 2.5rem;
+    flex-shrink: 0;
+}
+
+.info-content {
+    flex: 1;
+}
+
+.info-label {
+    margin: 0 0 4px 0;
+    font-size: 0.85rem;
+    color: #999;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.info-value {
+    margin: 0;
+    font-size: 1.2rem;
+    color: #1a1a1a;
+    font-weight: 700;
+}
+
+/* Compétences */
+.skills-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.skill-tag {
+    display: inline-block;
+    padding: 10px 18px;
+    background: linear-gradient(135deg, #FF9800, #F57C00);
+    color: white;
+    border-radius: 25px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(255, 152, 0, 0.3);
+    transition: all 0.3s ease;
+}
+
+.skill-tag:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(255, 152, 0, 0.4);
+}
+
+/* Stats section */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 20px;
+}
+
+.stat-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 25px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+}
+
+.stat-number {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #0066cc;
+    margin-bottom: 8px;
+}
+
+.stat-label {
+    font-size: 0.9rem;
+    color: #666;
+    font-weight: 600;
+    text-align: center;
+}
+
+/* Account info */
+.account-info {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.account-item {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 20px;
+    background: white;
+    border-radius: 10px;
+    border: 1px solid #e0e0e0;
+    transition: all 0.3s ease;
+}
+
+.account-item:hover {
+    border-color: #0066cc;
+    box-shadow: 0 2px 8px rgba(0, 102, 204, 0.1);
+}
+
+.account-label {
+    font-size: 0.85rem;
+    color: #999;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.account-value {
+    font-size: 1.05rem;
+    color: #1a1a1a;
+    font-weight: 600;
+    word-break: break-all;
+}
+
+.text-admin {
+    color: #ffd700;
+    font-weight: 700;
+}
+
+.text-student {
+    color: #4CAF50;
+    font-weight: 700;
+}
+
+/* Edit Profile Page amélioration */
+.edit-profile-page {
+    display: grid;
+    gap: 16px;
+}
+
+.edit-profile-card {
+    max-width: 760px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.edit-profile-card h1 {
+    margin: 0 0 20px;
+    color: #1a1a1a;
+    font-size: 1.8rem;
+    font-family: "Barlow Condensed", sans-serif;
+}
+
+.edit-profile-form {
+    display: grid;
+    gap: 20px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-group label {
+    color: #1a1a1a;
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+.form-input,
+.form-textarea {
+    padding: 12px 14px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 1rem;
+    color: #1a1a1a;
+    background: white;
+    transition: all 0.2s;
+}
+
+.form-input:focus,
+.form-textarea:focus {
+    outline: none;
+    border-color: #0066cc;
+    box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+}
+
+.form-textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.form-help {
+    display: block;
+    font-size: 0.85rem;
+    color: #999;
+    margin-top: 4px;
+}
+
+.profile-picture-section {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.current-profile-picture {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 3px solid #0066cc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: white;
+    box-shadow: 0 4px 12px rgba(0, 102, 204, 0.2);
+}
+
+.current-profile-picture .profile-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.profile-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f0f0f0;
+}
+
+.placeholder-avatar {
+    font-size: 3rem;
+    color: #0066cc;
+    font-weight: bold;
+}
+
+.file-input {
+    padding: 12px;
+    border: 2px dashed #0066cc;
+    border-radius: 8px;
+    background: rgba(0, 102, 204, 0.05);
+    cursor: pointer;
+    font-size: 0.95rem;
+}
+
+.file-input::-webkit-file-upload-button {
+    padding: 8px 16px;
+    background: #0066cc;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 600;
+    margin-right: 8px;
+}
+
+.form-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 10px;
+}
+
+.btn {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    transition: all 0.3s;
+    text-align: center;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #0066cc, #0052a3);
+    color: white;
+    box-shadow: 0 4px 12px rgba(0, 102, 204, 0.3);
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #0052a3, #003d7a);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 102, 204, 0.4);
+}
+
+.btn-secondary {
+    background: #f0f0f0;
+    color: #1a1a1a;
+    border: 2px solid #ddd;
+}
+
+.btn-secondary:hover {
+    background: #e0e0e0;
+    border-color: #999;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .profile-header-bg {
+        height: 200px;
+    }
+
+    .profile-card-main {
+        margin: -70px auto 0;
+        padding: 24px;
+    }
+
+    .profile-header-section {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 20px;
+    }
+
+    .profile-info-header h1 {
+        font-size: 1.8rem;
+    }
+
+    .btn-edit-profile {
+        width: 100%;
+        text-align: center;
+    }
+
+    .profile-section {
+        padding: 20px;
+    }
+
+    .info-grid,
+    .stats-grid,
+    .account-info {
+        grid-template-columns: 1fr;
+    }
+
+    .form-actions {
+        flex-direction: column;
+    }
+
+    .btn {
+        width: 100%;
+    }
+}

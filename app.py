@@ -1,14 +1,16 @@
 import os
+import re
 import uuid
 
 from dotenv import load_dotenv
 from flask import Flask, flash, jsonify, redirect, render_template, request, session, url_for
-from sqlalchemy import inspect, text
+from sqlalchemy import inspect, or_, text
 from sqlalchemy.exc import IntegrityError
 from werkzeug.utils import secure_filename
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from models import News, Post, PostComment, PostLike, User, db
+from ia.gemini_service import chat_simple
+from models import News, Post, PostComment, PostLike, PrivateMessage, User, db
 
 load_dotenv()
 
@@ -21,7 +23,6 @@ app.config["UPLOAD_FOLDER"] = os.path.join(app.static_folder or "static", "uploa
 app.config["MAX_CONTENT_LENGTH"] = 30 * 1024 * 1024
 
 ALLOWED_IMAGE_EXTENSIONS = {"png", "jpg", "jpeg", "gif", "webp"}
-ALLOWED_VIDEO_EXTENSIONS = {"mp4", "webm", "mov", "ogg"}
 
 db.init_app(app)
 
@@ -98,18 +99,98 @@ def _delete_media_if_exists(media_path: str | None) -> None:
         if os.path.isfile(absolute_path):
             os.remove(absolute_path)
     except OSError:
-        # Ignore cleanup issues to avoid blocking functional deletion.
         pass
+
+
+def _build_unique_ynov_email(username: str, used_emails: set[str]) -> str:
+    base = re.sub(r"[^a-z0-9._-]", "", (username or "").strip().lower())
+    if not base:
+        base = "user"
+
+    candidate = f"{base}@ynov.com"
+    counter = 1
+    while candidate in used_emails:
+        candidate = f"{base}{counter}@ynov.com"
+        counter += 1
+
+    used_emails.add(candidate)
+    return candidate
 
 
 def ensure_legacy_schema_updates() -> None:
     inspector = inspect(db.engine)
 
     user_columns = [column["name"] for column in inspector.get_columns("user")]
+    
+    # Add all missing user columns BEFORE querying the table
     if "is_admin" not in user_columns:
         db.session.execute(
             text('ALTER TABLE "user" ADD COLUMN is_admin BOOLEAN NOT NULL DEFAULT 0')
         )
+        db.session.commit()
+        user_columns.append("is_admin")
+
+    if "email" not in user_columns:
+        db.session.execute(text('ALTER TABLE "user" ADD COLUMN email VARCHAR(255)'))
+        db.session.commit()
+        user_columns.append("email")
+
+    if "profile_picture" not in user_columns:
+        db.session.execute(text('ALTER TABLE "user" ADD COLUMN profile_picture VARCHAR(255)'))
+        db.session.commit()
+        user_columns.append("profile_picture")
+
+    if "bio" not in user_columns:
+        db.session.execute(text('ALTER TABLE "user" ADD COLUMN bio TEXT'))
+        db.session.commit()
+        user_columns.append("bio")
+
+    if "age" not in user_columns:
+        db.session.execute(text('ALTER TABLE "user" ADD COLUMN age INTEGER'))
+        db.session.commit()
+        user_columns.append("age")
+
+    if "training_year" not in user_columns:
+        db.session.execute(text('ALTER TABLE "user" ADD COLUMN training_year VARCHAR(50)'))
+        db.session.commit()
+        user_columns.append("training_year")
+    else:
+        # Update existing integer column to varchar if needed
+        try:
+            db.session.execute(text('ALTER TABLE "user" RENAME COLUMN training_year TO training_year_old'))
+            db.session.execute(text('ALTER TABLE "user" ADD COLUMN training_year VARCHAR(50)'))
+            db.session.execute(text('UPDATE "user" SET training_year = CAST(training_year_old AS TEXT) WHERE training_year_old IS NOT NULL'))
+            db.session.execute(text('ALTER TABLE "user" DROP COLUMN training_year_old'))
+            db.session.commit()
+        except:
+            pass
+
+    if "specialization" not in user_columns:
+        db.session.execute(text('ALTER TABLE "user" ADD COLUMN specialization VARCHAR(255)'))
+        db.session.commit()
+        user_columns.append("specialization")
+
+    if "skills" not in user_columns:
+        db.session.execute(text('ALTER TABLE "user" ADD COLUMN skills TEXT'))
+        db.session.commit()
+        user_columns.append("skills")
+
+    # NOW safe to query the User table
+    existing_users = db.session.query(User).all()
+    used_emails = {
+        (existing_user.email or "").strip().lower()
+        for existing_user in existing_users
+        if (existing_user.email or "").strip().lower().endswith("@ynov.com")
+    }
+
+    has_updates = False
+    for existing_user in existing_users:
+        normalized_email = (existing_user.email or "").strip().lower()
+        if not normalized_email or normalized_email.endswith("@local.ynov"):
+            existing_user.email = _build_unique_ynov_email(existing_user.username, used_emails)
+            has_updates = True
+
+    if has_updates:
         db.session.commit()
 
     news_columns = [column["name"] for column in inspector.get_columns("news")]
@@ -128,6 +209,30 @@ def ensure_legacy_schema_updates() -> None:
 
     if "video_path" not in post_columns:
         db.session.execute(text('ALTER TABLE "post" ADD COLUMN video_path VARCHAR(255)'))
+        db.session.commit()
+
+    if "profile_picture" not in user_columns:
+        db.session.execute(text('ALTER TABLE "user" ADD COLUMN profile_picture VARCHAR(255)'))
+        db.session.commit()
+
+    if "bio" not in user_columns:
+        db.session.execute(text('ALTER TABLE "user" ADD COLUMN bio TEXT'))
+        db.session.commit()
+
+    if "age" not in user_columns:
+        db.session.execute(text('ALTER TABLE "user" ADD COLUMN age INTEGER'))
+        db.session.commit()
+
+    if "training_year" not in user_columns:
+        db.session.execute(text('ALTER TABLE "user" ADD COLUMN training_year INTEGER'))
+        db.session.commit()
+
+    if "specialization" not in user_columns:
+        db.session.execute(text('ALTER TABLE "user" ADD COLUMN specialization VARCHAR(255)'))
+        db.session.commit()
+
+    if "skills" not in user_columns:
+        db.session.execute(text('ALTER TABLE "user" ADD COLUMN skills TEXT'))
         db.session.commit()
 
 
@@ -158,20 +263,30 @@ def index():
 def register():
     if request.method == "POST":
         username = (request.form.get("username") or "").strip()
+        email = (request.form.get("email") or "").strip().lower()
         password = request.form.get("password") or ""
 
-        if not username or not password:
-            flash("Le nom d'utilisateur et le mot de passe sont obligatoires.")
+        if not username or not email or not password:
+            flash("Le nom d'utilisateur, l'email et le mot de passe sont obligatoires.")
+            return render_template("register.html")
+
+        if not re.match(r"^[^\s@]+@ynov\.com$", email):
+            flash("L'adresse email doit se terminer par @ynov.com.")
             return render_template("register.html")
 
         if User.query.filter_by(username=username).first():
             flash("Ce nom d'utilisateur existe déjà.")
             return render_template("register.html")
 
+        if User.query.filter_by(email=email).first():
+            flash("Cette adresse email est déjà utilisée.")
+            return render_template("register.html")
+
         is_first_user = User.query.count() == 0
 
         new_user = User(
             username=username,
+            email=email,
             password_hash=generate_password_hash(password, method="pbkdf2:sha256"),
             is_admin=is_first_user,
         )
@@ -183,7 +298,6 @@ def register():
             flash("Ce nom d'utilisateur existe déjà.")
             return render_template("register.html")
 
-        # Connexion automatique après création de compte.
         session["user_id"] = new_user.id
         flash("Compte créé avec succès. Bienvenue !")
         return redirect(url_for("index"))
@@ -212,6 +326,124 @@ def logout():
     session.clear()
     flash("Tu as été déconnecté.")
     return redirect(url_for("login"))
+
+
+@app.route("/profile")
+def profile():
+    current_user = _get_current_user()
+    if current_user is None:
+        return redirect(url_for("login"))
+
+    return render_template("profile.html", user=current_user)
+
+
+@app.route("/messages")
+def messages():
+    current_user = _get_current_user()
+    if current_user is None:
+        return redirect(url_for("login"))
+
+    search_query = (request.args.get("q") or "").strip()
+
+    users_query = User.query.filter(User.id != current_user.id)
+    if not current_user.is_admin:
+        users_query = users_query.filter(User.is_admin.is_(False))
+
+    if search_query:
+        users_query = users_query.filter(User.username.ilike(f"%{search_query}%"))
+
+    all_users = users_query.order_by(User.username.asc()).all()
+    visible_user_ids = {item.id for item in all_users}
+
+    selected_user = None
+    selected_user_id_raw = request.args.get("with_user", "")
+    if selected_user_id_raw.isdigit():
+        selected_candidate = db.session.get(User, int(selected_user_id_raw))
+        if selected_candidate is not None and selected_candidate.id in visible_user_ids:
+            selected_user = selected_candidate
+        else:
+            selected_user = None
+
+    if selected_user is None and all_users:
+        selected_user = all_users[0]
+
+    conversation_messages = []
+    if selected_user is not None:
+        conversation_messages = (
+            PrivateMessage.query.filter(
+                or_(
+                    (PrivateMessage.sender_id == current_user.id)
+                    & (PrivateMessage.recipient_id == selected_user.id),
+                    (PrivateMessage.sender_id == selected_user.id)
+                    & (PrivateMessage.recipient_id == current_user.id),
+                )
+            )
+            .order_by(PrivateMessage.created_at.asc())
+            .all()
+        )
+
+    return render_template(
+        "messages.html",
+        user=current_user,
+        users=all_users,
+        search_query=search_query,
+        selected_user=selected_user,
+        conversation_messages=conversation_messages,
+    )
+
+
+@app.route("/messages/send", methods=["POST"])
+def send_message():
+    current_user = _get_current_user()
+    if current_user is None:
+        return redirect(url_for("login"))
+
+    recipient_id_raw = request.form.get("recipient_id", "")
+    content = (request.form.get("content") or "").strip()
+
+    if not recipient_id_raw.isdigit():
+        flash("Destinataire invalide.")
+        return redirect(url_for("messages"))
+
+    recipient_id = int(recipient_id_raw)
+    recipient = db.session.get(User, recipient_id)
+    if recipient is None or recipient.id == current_user.id:
+        flash("Destinataire introuvable.")
+        return redirect(url_for("messages"))
+
+    if not current_user.is_admin and recipient.is_admin:
+        flash("Ce compte n'est pas disponible en messagerie privée.")
+        return redirect(url_for("messages"))
+
+    if not content:
+        flash("Le message ne peut pas être vide.")
+        return redirect(url_for("messages", with_user=recipient.id))
+
+    message = PrivateMessage(
+        sender_id=current_user.id,
+        recipient_id=recipient.id,
+        content=content,
+    )
+    db.session.add(message)
+    db.session.commit()
+
+    return redirect(url_for("messages", with_user=recipient.id))
+
+
+@app.route("/api/ai/chat", methods=["POST"])
+def ai_chat():
+    current_user = _get_current_user()
+    if current_user is None:
+        return jsonify({"reply": "Connecte-toi pour utiliser le chatbot."}), 401
+
+    payload = request.get_json(silent=True) or {}
+    user_message = (payload.get("message") or "").strip()
+
+    if not user_message:
+        return jsonify({"reply": "Merci d'écrire un message."}), 400
+
+    reply = chat_simple(user_message)
+    return jsonify({"reply": reply})
 
 
 @app.route("/news", methods=["POST"])
@@ -246,27 +478,20 @@ def add_post():
 
     content = (request.form.get("content") or "").strip()
     image_file = request.files.get("image")
-    video_file = request.files.get("video")
 
     image_path = _save_media_file(image_file, ALLOWED_IMAGE_EXTENSIONS, "images")
-    video_path = _save_media_file(video_file, ALLOWED_VIDEO_EXTENSIONS, "videos")
 
     if image_file and image_file.filename and image_path is None:
         flash("Format d'image non supporte.")
         return redirect(url_for("index"))
 
-    if video_file and video_file.filename and video_path is None:
-        flash("Format de video non supporte.")
-        return redirect(url_for("index"))
-
-    if not content and not image_path and not video_path:
-        flash("Ajoute du texte, une image ou une video pour publier.")
+    if not content and not image_path:
+        flash("Ajoute du texte ou une image pour publier.")
         return redirect(url_for("index"))
 
     post_item = Post(
         content=content,
         image_path=image_path,
-        video_path=video_path,
         author_id=current_user.id,
     )
     db.session.add(post_item)
@@ -379,6 +604,58 @@ def feed_updates():
         .all()
     )
     return jsonify({"items": [_post_to_dict(item, current_user.id) for item in new_items]})
+
+
+@app.route("/profile/edit", methods=["GET", "POST"])
+def edit_profile():
+    current_user = _get_current_user()
+    if current_user is None:
+        return redirect(url_for("login"))
+
+    if request.method == "POST":
+        bio = (request.form.get("bio") or "").strip()
+        age_raw = (request.form.get("age") or "").strip()
+        training_year_raw = (request.form.get("training_year") or "").strip()
+        specialization = (request.form.get("specialization") or "").strip()
+        skills = (request.form.get("skills") or "").strip()
+        profile_picture_file = request.files.get("profile_picture")
+
+        age = None
+        if age_raw:
+            try:
+                age = int(age_raw)
+                if age < 1 or age > 150:
+                    flash("L'âge doit être entre 1 et 150.")
+                    return render_template("edit_profile.html", user=current_user)
+            except ValueError:
+                flash("L'âge doit être un nombre.")
+                return render_template("edit_profile.html", user=current_user)
+
+        training_year = training_year_raw if training_year_raw else None
+
+        profile_picture_path = None
+        if profile_picture_file and profile_picture_file.filename:
+            profile_picture_path = _save_media_file(profile_picture_file, ALLOWED_IMAGE_EXTENSIONS, "profile_pictures")
+            if not profile_picture_path:
+                flash("Format d'image non supporté pour la photo de profil.")
+                return render_template("edit_profile.html", user=current_user)
+            
+            if current_user.profile_picture:
+                _delete_media_if_exists(current_user.profile_picture)
+
+        current_user.bio = bio
+        current_user.age = age
+        current_user.training_year = training_year
+        current_user.specialization = specialization
+        current_user.skills = skills
+        if profile_picture_path:
+            current_user.profile_picture = profile_picture_path
+
+        db.session.commit()
+        flash("Profil mis à jour avec succès.")
+        return redirect(url_for("profile"))
+
+    return render_template("edit_profile.html", user=current_user)
 
 
 if __name__ == "__main__":

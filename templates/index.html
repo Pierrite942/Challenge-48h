@@ -15,10 +15,6 @@
                 <span>Photo</span>
                 <input type="file" name="image" accept="image/*">
             </label>
-            <label>
-                <span>Video</span>
-                <input type="file" name="video" accept="video/*">
-            </label>
         </div>
         <button type="submit">Publier</button>
     </form>
@@ -27,27 +23,35 @@
 
 <section class="dashboard-layout">
     <aside class="dashboard-column left">
-        <article class="box box-files">
-            <h3>Files</h3>
-            <p>Contenu de vos fichiers...</p>
-        </article>
-
-        <article class="box box-chatbot">
-            <h3>Chat Bot</h3>
-            <p>Bonjour ! Je suis l'IA Gemini.<br>Comment puis-je vous aider ?</p>
-
-            <form class="chatbot-form" action="#" method="post" onsubmit="return false;">
-                <input type="text" placeholder="Ecrivez votre message..." aria-label="Message chatbot">
-                <button type="submit">Envoyer</button>
+        <article class="box box-news">
+            <h3>News Ynov</h3>
+            {% if user.is_admin %}
+            <form class="ynov-news-form" action="{{ url_for('add_news') }}" method="POST">
+                <input type="text" name="title" placeholder="Titre de la news" maxlength="120" required>
+                <textarea name="content" placeholder="Contenu de la news Ynov..." required></textarea>
+                <button type="submit">Publier la news</button>
             </form>
+            {% endif %}
+
+            <div class="ynov-news-list">
+                {% if ynov_news_list %}
+                    {% for news_item in ynov_news_list %}
+                    <article class="ynov-news-item">
+                        <strong>{{ news_item.title }}</strong>
+                        <p>{{ news_item.content }}</p>
+                        <small>{{ news_item.created_at.strftime('%d/%m %H:%M') }}</small>
+                    </article>
+                    {% endfor %}
+                {% else %}
+                    <p class="news-empty">Aucune news Ynov pour le moment.</p>
+                {% endif %}
+            </div>
         </article>
     </aside>
 
     <section class="dashboard-column middle">
         <article class="box box-feed">
-            <p class="box-eyebrow">Feed Live</p>
-            <h1>Mur des utilisateurs</h1>
-            <p class="feed-subtitle"></p>
+            <h2>Mur des utilisateurs</h2>
 
             <div class="feed-list" id="feed-list" data-last-id="{{ posts[0].id if posts else 0 }}">
                 {% if posts %}
@@ -111,33 +115,17 @@
             <p>Tu veux poster ?</p>
             <button type="button" id="open-drawer" class="open-drawer-btn">Nouveau post</button>
         </article>
-
-        <article class="box box-news">
-            <h3>News Ynov</h3>
-            {% if user.is_admin %}
-            <form class="ynov-news-form" action="{{ url_for('add_news') }}" method="POST">
-                <input type="text" name="title" placeholder="Titre de la news" maxlength="120" required>
-                <textarea name="content" placeholder="Contenu de la news Ynov..." required></textarea>
-                <button type="submit">Publier la news</button>
-            </form>
-            {% endif %}
-
-            <div class="ynov-news-list">
-                {% if ynov_news_list %}
-                    {% for news_item in ynov_news_list %}
-                    <article class="ynov-news-item">
-                        <strong>{{ news_item.title }}</strong>
-                        <p>{{ news_item.content }}</p>
-                        <small>{{ news_item.created_at.strftime('%d/%m %H:%M') }}</small>
-                    </article>
-                    {% endfor %}
-                {% else %}
-                    <p class="news-empty">Aucune news Ynov pour le moment.</p>
-                {% endif %}
-            </div>
+        
+        <article class="box box-ymatch">
+            <h3>YMatch</h3>
+            <p>Retrouvez nos services de matching</p>
+            <a href="https://ymatch.ynov.com" target="_blank" class="ymatch-btn">Accéder à YMatch</a>
         </article>
     </aside>
 </section>
+
+<script id="initial-posts-data" type="application/json">{{ serialized_posts | tojson }}</script>
+<script id="is-admin-data" type="application/json">{{ user.is_admin | tojson }}</script>
 
 <script>
     (() => {
@@ -146,8 +134,15 @@
             return;
         }
 
-        const initialItems = {{ serialized_posts | tojson }};
-        const isAdmin = {{ user.is_admin | tojson }};
+        const initialItemsNode = document.getElementById("initial-posts-data");
+        const isAdminNode = document.getElementById("is-admin-data");
+
+        const initialItems = initialItemsNode
+            ? JSON.parse(initialItemsNode.textContent || "[]")
+            : [];
+        const isAdmin = isAdminNode
+            ? JSON.parse(isAdminNode.textContent || "false")
+            : false;
         let latestId = Number(feedList.dataset.lastId || 0);
 
         const drawer = document.getElementById("post-drawer");
@@ -265,7 +260,6 @@
                     }
                 }
             } catch (_error) {
-                // Fail silently and retry on next interval.
             }
         };
 

@@ -34,4 +34,8 @@ GEMINI_MODEL=gemini-2.5-flash
 py app.py
 ```
 
+<<<<<<< HEAD
 Puis ouvrir le lien local affiché dans le terminal.
+=======
+Puis ouvrir le lien local affiché dans le terminal.
+>>>>>>> 75c23c1611bd9dac18b88bdf2152d3cd8773bde7
