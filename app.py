@@ -122,7 +122,6 @@ def ensure_legacy_schema_updates() -> None:
 
     user_columns = [column["name"] for column in inspector.get_columns("user")]
     
-    # Add all missing user columns BEFORE querying the table
     if "is_admin" not in user_columns:
         db.session.execute(
             text('ALTER TABLE "user" ADD COLUMN is_admin BOOLEAN NOT NULL DEFAULT 0')
@@ -155,7 +154,6 @@ def ensure_legacy_schema_updates() -> None:
         db.session.commit()
         user_columns.append("training_year")
     else:
-        # Update existing integer column to varchar if needed
         try:
             db.session.execute(text('ALTER TABLE "user" RENAME COLUMN training_year TO training_year_old'))
             db.session.execute(text('ALTER TABLE "user" ADD COLUMN training_year VARCHAR(50)'))
@@ -175,7 +173,6 @@ def ensure_legacy_schema_updates() -> None:
         db.session.commit()
         user_columns.append("skills")
 
-    # NOW safe to query the User table
     existing_users = db.session.query(User).all()
     used_emails = {
         (existing_user.email or "").strip().lower()
@@ -642,7 +639,7 @@ def feed_updates():
 
     new_items = (
         Post.query.filter(Post.id > after_id)
-        .order_by(Post.created_at.asc())
+        .order_by(Post.created_at.desc())
         .all()
     )
     return jsonify({"items": [_post_to_dict(item, current_user.id) for item in new_items]})

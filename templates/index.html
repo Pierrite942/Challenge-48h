@@ -77,10 +77,8 @@
                         {% endif %}
 
                         <div class="post-actions">
-                            <form action="{{ url_for('toggle_post_like', post_id=item.id) }}" method="POST">
-                                <button type="submit" class="like-btn {% if item.likes | selectattr('user_id', 'equalto', user.id) | list %}active{% endif %}">
-                                    Like ({{ item.likes | length }})
-                                </button>
+                            <form action="{{ url_for('toggle_post_like', post_id=item.id) }}" method="POST" class="like-form" data-post-id="{{ item.id }}">
+                                <button type="submit" class="like-btn {% if item.likes | selectattr('user_id', 'equalto', user.id) | list %}active{% endif %}">👍 <span class="like-count">{{ item.likes | length }}</span></button>
                             </form>
                             {% if user.is_admin %}
                             <form action="{{ url_for('admin_delete_post', post_id=item.id) }}" method="POST" onsubmit="return confirm('Confirmer la suppression de ce post ?');">
@@ -225,8 +223,8 @@
                 ${imagePart}
                 ${videoPart}
                 <div class="post-actions">
-                    <form action="/posts/${item.id}/like" method="POST">
-                        <button type="submit" class="like-btn">Like (${Number(item.likes_count || 0)})</button>
+                    <form action="/posts/${item.id}/like" method="POST" class="like-form" data-post-id="${item.id}">
+                        <button type="submit" class="like-btn">👍 <span class="like-count">${Number(item.likes_count || 0)}</span></button>
                     </form>
                     ${isAdmin ? `<form action="/admin/posts/${item.id}/delete" method="POST" onsubmit="return confirm('Confirmer la suppression de ce post ?');"><button type="submit" class="admin-delete-btn">Supprimer le post</button></form>` : ""}
                 </div>
@@ -271,6 +269,44 @@
         if (initialItems.length && !latestId) {
             latestId = Math.max(...initialItems.map((item) => Number(item.id || 0)));
         }
+
+        document.addEventListener("click", async (event) => {
+            const button = event.target.closest(".like-btn");
+            if (!button) {
+                return;
+            }
+            
+            event.preventDefault();
+            event.stopPropagation();
+            
+            const form = button.closest("form");
+            if (!form || !form.classList.contains("like-form")) {
+                return;
+            }
+            
+            const likeCountSpan = form.querySelector(".like-count");
+            if (!likeCountSpan) {
+                return;
+            }
+            
+            try {
+                const response = await fetch(form.action, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded",
+                    }
+                });
+                
+                if (response.ok) {
+                    button.classList.toggle("active");
+                    const currentCount = parseInt(likeCountSpan.textContent, 10);
+                    const newCount = button.classList.contains("active") ? currentCount + 1 : currentCount - 1;
+                    likeCountSpan.textContent = newCount;
+                }
+            } catch (error) {
+                console.error("Erreur lors du like:", error);
+            }
+        });
 
         setInterval(pollFeed, 2000);
     })();

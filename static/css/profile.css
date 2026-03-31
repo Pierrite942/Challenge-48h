@@ -4,7 +4,6 @@
     position: relative;
 }
 
-/* Header de couverture */
 .profile-header-bg {
     width: 100%;
     height: 280px;
@@ -26,7 +25,6 @@
     pointer-events: none;
 }
 
-/* Carte de profil principale */
 .profile-card-main {
     max-width: 900px;
     width: 100%;
@@ -39,7 +37,6 @@
     z-index: 10;
 }
 
-/* Section header du profil */
 .profile-header-section {
     display: flex;
     gap: 30px;
@@ -137,15 +134,6 @@
     box-shadow: 0 6px 20px rgba(0, 102, 204, 0.4);
 }
 
-/* Sections de profil */
-.profile-section {
-    margin-bottom: 30px;
-    padding: 30px;
-    background: #f9f9f9;
-    border-radius: 12px;
-    border-left: 4px solid #0066cc;
-}
-
 .bio-section {
     border-left-color: #4CAF50;
 }
@@ -183,13 +171,6 @@
     line-height: 1.8;
     color: #333;
     font-style: italic;
-}
-
-/* Info cards pour les infos académiques */
-.info-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 20px;
 }
 
 .info-card {
@@ -234,7 +215,6 @@
 
 /* Compétences */
 .skills-list {
-    display: flex;
     flex-wrap: wrap;
     gap: 12px;
 }
@@ -258,7 +238,6 @@
 
 /* Stats section */
 .stats-grid {
-    display: grid;
     grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
     gap: 20px;
 }
@@ -296,7 +275,6 @@
 /* Account info */
 .account-info {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 20px;
 }
 
@@ -515,7 +493,7 @@
 /* Responsive */
 @media (max-width: 768px) {
     .profile-header-bg {
-        height: 200px;
+200px;
     }
 
     .profile-card-main {

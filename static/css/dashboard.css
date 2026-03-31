@@ -79,7 +79,6 @@
     align-self: stretch;
     max-height: unset;
 }
-}
 
 .dashboard-column.middle {
     min-height: 100%;
@@ -129,7 +128,6 @@
     color: #666;
 }
 
-/* News Box */
 .box-news {
     min-height: 0;
     background: linear-gradient(135deg, #26C6DA 0%, #00BCD4 100%);
@@ -285,7 +283,6 @@
     font-size: 1rem;
 }
 
-/* Feed Box */
 .box-feed {
     min-height: 0;
     background: #e7e7e7;
@@ -337,7 +334,6 @@
     color: rgba(255, 255, 255, 0.95);
 }
 
-/* YMatch Box */
 .box-ymatch {
     background: linear-gradient(135deg, #2C3E50 0%, #34495E 100%);
     color: white;
@@ -612,7 +608,7 @@
     border-color: #888;
 }
 
-/* Responsive */
+
 @media (max-width: 1024px) {
     .dashboard-layout {
         grid-template-columns: 1fr 1fr;

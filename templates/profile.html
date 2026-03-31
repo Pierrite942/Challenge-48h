@@ -4,10 +4,8 @@
 
 {% block content %}
 <section class="profile-page">
-    <!-- Header de couverture -->
     <div class="profile-header-bg"></div>
 
-    <!-- Carte de profil principale -->
     <article class="profile-card-main">
         <div class="profile-header-section">
             <div class="profile-avatar-wrapper">
@@ -33,7 +31,6 @@
             </div>
         </div>
 
-        <!-- Biographie -->
         {% if user.bio %}
         <div class="profile-section bio-section">
             <div class="section-content">
@@ -42,7 +39,6 @@
         </div>
         {% endif %}
 
-        <!-- Informations académiques et personnelles -->
         {% if user.age or user.specialization or user.training_year %}
         <div class="profile-section info-section">
             <h2 class="section-title">📚 Informations académiques</h2>
@@ -80,7 +76,6 @@
         </div>
         {% endif %}
 
-        <!-- Compétences techniques -->
         {% if user.skills %}
         <div class="profile-section skills-section">
             <h2 class="section-title">🛠️ Compétences techniques</h2>
@@ -96,7 +91,6 @@
         </div>
         {% endif %}
 
-        <!-- Statistiques d'activité -->
         <div class="profile-section stats-section">
             <h2 class="section-title">📊 Activité</h2>
             <div class="stats-grid">
@@ -115,7 +109,6 @@
             </div>
         </div>
 
-        <!-- Informations de compte -->
         <div class="profile-section account-section">
             <h2 class="section-title">👤 Informations de compte</h2>
             <div class="account-info">

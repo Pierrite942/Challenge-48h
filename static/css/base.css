@@ -51,6 +51,20 @@ a {
     color: #f7f7f7;
     text-transform: lowercase;
     font-size: 26px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.logo-icon {
+    height: 50px;
+    width: auto;
+    display: block;
+    transition: transform 0.2s ease;
+}
+
+.logo-block:hover .logo-icon {
+    transform: scale(1.05);
 }
 
 .logo-line {
