@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}Connexion - Ynov Access{% endblock %}
+
+{% block content %}
+<div class="card-form">
+	<div class="card-heading">
+		<h2>Se connecter</h2>
+		<p>Accède à ton espace avec les identifiants créés sur le site.</p>
+	</div>
+
+	<form method="POST" class="stack-form">
+		<label>
+			<span>Nom d'utilisateur</span>
+			<input type="text" name="username" placeholder="Ton identifiant" required>
+		</label>
+
+		<label>
+			<span>Mot de passe</span>
+			<input type="password" name="password" placeholder="Ton mot de passe" required>
+		</label>
+
+		<button type="submit" class="primary-btn">Connexion</button>
+	</form>
+
+	<p class="switch-link">Pas encore de compte ? <a href="{{ url_for('register') }}">Créer un compte</a></p>
+</div>
+{% endblock %}

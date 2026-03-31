@@ -3,49 +3,147 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Mon Site{% endblock %}</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    {% block head %}{% endblock %}
+    <title>{% block title %}Ynov Access{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;700&family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/profile.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/messages.css') }}">
 </head>
 <body>
-    <header>
-        <div class="header-container">
-            <a class="logo" href="{{ url_for('index') }}">Mon Site</a>
-            <button class="menu-button" id="menuBtn" type="button">☰ Menu</button>
-            <nav class="menu-dropdown" id="menuDropdown">
-                <a href="{{ url_for('index') }}">Accueil</a>
-                <a href="{{ url_for('services') }}">Services</a>
-                <a href="{{ url_for('apropos') }}">À propos</a>
-                <a href="{{ url_for('contact') }}">Contact</a>
-            </nav>
+    <header class="site-header">
+        <div class="site-header-inner">
+            <a href="{{ url_for('index') }}" class="logo-block" aria-label="Accueil">
+                <span class="logo-line">yb</span>
+                <span class="logo-line">arts</span>
+            </a>
+
+            <div class="header-actions">
+                {% if user %}
+                <a href="{{ url_for('messages') }}" class="header-btn">Messages</a>
+                <a href="{{ url_for('logout') }}" class="header-btn primary">Déconnexion</a>
+                <a href="{{ url_for('profile') }}" class="profile-link" aria-label="Voir le profil">
+                    {% if user.profile_picture %}
+                        <img src="{{ url_for('static', filename=user.profile_picture) }}" alt="Photo de profil" class="profile-avatar-img">
+                    {% else %}
+                        <span class="profile-avatar">{{ user.username[0] | upper if user.username else "U" }}</span>
+                    {% endif %}
+                    <span class="profile-name">{{ user.username }}</span>
+                </a>
+                {% else %}
+                <a href="{{ url_for('register') }}" class="header-btn primary">S'inscrire</a>
+                {% endif %}
+            </div>
         </div>
     </header>
 
-    <main>
+    <main class="page-content">
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="flash-stack">
+                    {% for message in messages %}
+                        <div class="flash-message">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
         {% block content %}{% endblock %}
     </main>
 
-    <footer>
-        <p>&copy; 2026 Mon Site. Tous droits réservés.</p>
-    </footer>
+    {% if user %}
+    <div class="gemini-widget" id="gemini-widget">
+        <button type="button" class="gemini-fab" id="gemini-fab" aria-label="Ouvrir Gemini">✦</button>
+
+        <section class="gemini-panel" id="gemini-panel" aria-hidden="true">
+            <div class="gemini-panel-header">
+                <strong>Gemini</strong>
+                <button type="button" id="gemini-close" class="gemini-close-btn">Fermer</button>
+            </div>
+
+            <div class="gemini-messages" id="gemini-messages" aria-live="polite"></div>
+
+            <form class="gemini-form" id="gemini-form" action="#" method="post" onsubmit="return false;">
+                <input id="gemini-input" type="text" placeholder="Écrire à Gemini..." maxlength="1500" aria-label="Message Gemini">
+                <button type="submit">Envoyer</button>
+            </form>
+        </section>
+    </div>
 
     <script>
-        const menuBtn = document.getElementById('menuBtn');
-        const menuDropdown = document.getElementById('menuDropdown');
+        (() => {
+            const fab = document.getElementById("gemini-fab");
+            const panel = document.getElementById("gemini-panel");
+            const closeBtn = document.getElementById("gemini-close");
+            const form = document.getElementById("gemini-form");
+            const input = document.getElementById("gemini-input");
+            const list = document.getElementById("gemini-messages");
 
-        if (menuBtn && menuDropdown) {
-            menuBtn.addEventListener('click', (event) => {
-                event.stopPropagation();
-                menuDropdown.classList.toggle('show');
-            });
+            if (!fab || !panel || !closeBtn || !form || !input || !list) {
+                return;
+            }
 
-            document.addEventListener('click', (event) => {
-                if (!menuBtn.contains(event.target) && !menuDropdown.contains(event.target)) {
-                    menuDropdown.classList.remove('show');
+            const appendMessage = (author, text, role) => {
+                const node = document.createElement("p");
+                node.className = `gemini-message ${role}`;
+
+                const strong = document.createElement("strong");
+                strong.textContent = `${author} : `;
+                node.append(strong);
+                node.append(document.createTextNode(text || ""));
+
+                list.append(node);
+                list.scrollTop = list.scrollHeight;
+            };
+
+            const openPanel = () => {
+                panel.classList.add("open");
+                panel.setAttribute("aria-hidden", "false");
+                input.focus();
+            };
+
+            const closePanel = () => {
+                panel.classList.remove("open");
+                panel.setAttribute("aria-hidden", "true");
+            };
+
+            fab.addEventListener("click", () => {
+                if (panel.classList.contains("open")) {
+                    closePanel();
+                } else {
+                    openPanel();
                 }
             });
-        }
+
+            closeBtn.addEventListener("click", closePanel);
+
+            form.addEventListener("submit", async () => {
+                const userText = input.value.trim();
+                if (!userText) {
+                    return;
+                }
+
+                appendMessage("Vous", userText, "user");
+                input.value = "";
+
+                try {
+                    const response = await fetch("/api/ai/chat", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ message: userText }),
+                    });
+
+                    const payload = await response.json();
+                    appendMessage("Gemini", payload.reply || "Pas de réponse.", "bot");
+                } catch (_error) {
+                    appendMessage("Gemini", "Erreur réseau, réessaie.", "bot");
+                }
+            });
+        })();
     </script>
-    {% block scripts %}{% endblock %}
+    {% endif %}
 </body>
 </html>
