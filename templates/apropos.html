@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}À propos - Mon Site{% endblock %}
+
+{% block content %}
+    <section class="hero">
+        <h1>À propos de nous</h1>
+        <p>En savoir plus sur notre histoire, nos objectifs et notre fonctionnement technique.</p>
+    </section>
+
+    <section class="feature-grid">
+        <article class="feature-card">
+            <h2>Vision</h2>
+            <p>Créer un espace étudiant utile, clair et évolutif.</p>
+        </article>
+        <article class="feature-card">
+            <h2>Conception</h2>
+            <p>Un layout partagé pour éviter les pages isolées et incohérentes.</p>
+        </article>
+        <article class="feature-card">
+            <h2>Backend</h2>
+            <p>Flask gère les routes, les formulaires et la connexion à PostgreSQL.</p>
+        </article>
+    </section>
+{% endblock %}

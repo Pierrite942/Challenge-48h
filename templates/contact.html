@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}Contact - Mon Site{% endblock %}
+
+{% block content %}
+    <section class="hero">
+        <h1>Nous contacter</h1>
+        <p>Envoyez un message, il sera enregistré dans PostgreSQL.</p>
+    </section>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <section class="flash-stack">
+                {% for category, message in messages %}
+                    <div class="flash {{ category }}">{{ message }}</div>
+                {% endfor %}
+            </section>
+        {% endif %}
+    {% endwith %}
+
+    <section class="contact-layout">
+        <article class="contact-card">
+            <h2>Envoyer un message</h2>
+            <form method="post" class="contact-form">
+                <label>
+                    Nom
+                    <input type="text" name="name" placeholder="Ton nom" required>
+                </label>
+                <label>
+                    Email
+                    <input type="email" name="email" placeholder="ton@email.com" required>
+                </label>
+                <label>
+                    Sujet
+                    <input type="text" name="subject" placeholder="Objet du message" required>
+                </label>
+                <label>
+                    Message
+                    <textarea name="message" rows="6" placeholder="Écris ton message ici" required></textarea>
+                </label>
+                <button type="submit" class="primary-btn">Enregistrer dans la base</button>
+            </form>
+        </article>
+
+        <article class="contact-card">
+            <h2>Derniers messages</h2>
+            <div class="contact-list">
+                {% for item in recent_messages %}
+                    <div class="contact-entry">
+                        <strong>{{ item.name }}</strong>
+                        <span>{{ item.email }}</span>
+                        <h3>{{ item.subject }}</h3>
+                        <p>{{ item.message }}</p>
+                        <small>{{ item.created_at }}</small>
+                    </div>
+                {% else %}
+                    <p>Aucun message enregistré pour le moment.</p>
+                {% endfor %}
+            </div>
+        </article>
+    </section>
+{% endblock %}
