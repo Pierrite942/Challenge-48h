@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}Profil - {{ user.username }}{% endblock %}
+
+{% block content %}
+<section class="profile-page">
+    <article class="box profile-card">
+        <div class="profile-header">
+            <span class="profile-avatar big">{{ user.username[0] | upper if user.username else "U" }}</span>
+            <div>
+                <h1>{{ user.username }}</h1>
+                <p>Membre depuis le {{ user.created_at.strftime('%d/%m/%Y') }}</p>
+            </div>
+        </div>
+
+        <div class="profile-grid">
+            <div>
+                <h3>Compte</h3>
+                <p><strong>Nom d'utilisateur :</strong> {{ user.username }}</p>
+                <p><strong>Email :</strong> {{ user.email }}</p>
+                <p><strong>Rôle :</strong> {{ 'Administrateur' if user.is_admin else 'Etudiant' }}</p>
+            </div>
+            <div>
+                <h3>Activité</h3>
+                <p><strong>Posts :</strong> {{ user.posts | length }}</p>
+                <p><strong>Commentaires :</strong> {{ user.post_comments | length }}</p>
+                <p><strong>Likes :</strong> {{ user.post_likes | length }}</p>
+            </div>
+        </div>
+    </article>
+</section>
+{% endblock %}
