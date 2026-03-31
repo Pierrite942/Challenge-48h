@@ -27,7 +27,9 @@
                         🎓 Étudiant
                     {% endif %}
                 </div>
+                {% if is_own_profile %}
                 <a href="{{ url_for('edit_profile') }}" class="btn-edit-profile">✏️ Éditer le profil</a>
+                {% endif %}
             </div>
         </div>
 

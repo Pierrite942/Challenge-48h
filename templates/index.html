@@ -63,7 +63,7 @@
                     {% for item in posts %}
                     <article class="feed-item" data-id="{{ item.id }}">
                         <div class="feed-meta">
-                            <strong>{{ item.author.username }}</strong>
+                            <a href="{{ url_for('view_profile', username=item.author.username) }}" class="profile-link"><strong>{{ item.author.username }}</strong></a>
                             <small>{{ item.created_at.strftime('%d/%m %H:%M') }}</small>
                         </div>
                         {% if item.content %}
@@ -92,7 +92,7 @@
                         <div class="comment-list">
                             {% for comment in item.comments %}
                             <p>
-                                <strong>{{ comment.user.username }}</strong> {{ comment.content }}
+                                <a href="{{ url_for('view_profile', username=comment.user.username) }}" class="profile-link"><strong>{{ comment.user.username }}</strong></a> {{ comment.content }}
                                 {% if user.is_admin %}
                                 <form class="inline-delete-form" action="{{ url_for('admin_delete_comment', comment_id=comment.id) }}" method="POST" onsubmit="return confirm('Confirmer la suppression de ce commentaire ?');">
                                     <button type="submit" class="admin-delete-btn small">Supprimer</button>

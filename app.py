@@ -334,7 +334,26 @@ def profile():
     if current_user is None:
         return redirect(url_for("login"))
 
-    return render_template("profile.html", user=current_user)
+    return render_template("profile.html", user=current_user, is_own_profile=True)
+
+
+@app.route("/profile/<username>")
+def view_profile(username: str):
+    current_user = _get_current_user()
+    if current_user is None:
+        return redirect(url_for("login"))
+    
+    viewed_user = User.query.filter_by(username=username).first()
+    if viewed_user is None:
+        flash("Utilisateur introuvable.")
+        return redirect(url_for("index"))
+    
+    if not current_user.is_admin and viewed_user.is_admin and viewed_user.id != current_user.id:
+        flash("Vous n'avez pas accès à ce profil.")
+        return redirect(url_for("index"))
+    
+    is_own_profile = viewed_user.id == current_user.id
+    return render_template("profile.html", user=viewed_user, is_own_profile=is_own_profile)
 
 
 @app.route("/messages")

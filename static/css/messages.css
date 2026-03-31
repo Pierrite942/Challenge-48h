@@ -128,8 +128,29 @@
     gap: 12px;
 }
 
+.messages-header-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+    flex: 1;
+}
+
+.messages-header-link:hover {
+    opacity: 0.8;
+}
+
+.messages-header-link:hover h3 {
+    color: #3498db;
+    text-decoration: underline;
+}
+
 .messages-thread-header h3 {
     margin: 0;
+    transition: color 0.2s ease;
 }
 
 .messages-list {

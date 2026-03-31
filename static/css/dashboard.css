@@ -480,10 +480,23 @@
     margin-bottom: 8px;
 }
 
+.profile-link {
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.profile-link:hover strong {
+    color: #3498db;
+    text-decoration: underline;
+}
+
 .feed-item strong {
     display: block;
     font-size: 0.9rem;
     color: #2d2d2d;
+    transition: color 0.2s ease;
 }
 
 .feed-item p {

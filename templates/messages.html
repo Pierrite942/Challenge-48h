@@ -40,12 +40,14 @@
     <section class="box messages-thread">
         {% if selected_user %}
             <div class="messages-thread-header">
-                {% if selected_user.profile_picture %}
-                    <img src="{{ url_for('static', filename=selected_user.profile_picture) }}" alt="{{ selected_user.username }}" class="messages-header-avatar">
-                {% else %}
-                    <div class="messages-header-avatar-placeholder">{{ selected_user.username[0] | upper if selected_user.username else "U" }}</div>
-                {% endif %}
-                <h3>{{ selected_user.username }}</h3>
+                <a href="{{ url_for('view_profile', username=selected_user.username) }}" class="messages-header-link">
+                    {% if selected_user.profile_picture %}
+                        <img src="{{ url_for('static', filename=selected_user.profile_picture) }}" alt="{{ selected_user.username }}" class="messages-header-avatar">
+                    {% else %}
+                        <div class="messages-header-avatar-placeholder">{{ selected_user.username[0] | upper if selected_user.username else "U" }}</div>
+                    {% endif %}
+                    <h3>{{ selected_user.username }}</h3>
+                </a>
             </div>
 
             <div class="messages-list">
